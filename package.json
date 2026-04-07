@@ -1,0 +1,13 @@
+{
+  "name": "evtimes-workspace",
+  "private": true,
+  "workspaces": [
+    "evtimes"
+  ],
+  "scripts": {
+    "dev": "npm --workspace evtimes run dev",
+    "build": "npm --workspace evtimes run build",
+    "start": "npm --workspace evtimes run start",
+    "lint": "npm --workspace evtimes run lint"
+  }
+}
