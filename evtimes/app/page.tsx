@@ -1,65 +1,361 @@
-import Image from "next/image";
+﻿"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+const tickerItems = [
+  "Tata Motors Q3 EV sales up 34% YoY",
+  "FAME III policy announcement expected this quarter",
+  "BYD Seal launched in India at Rs 41L",
+  "Ola Electric files for IPO",
+  "Ather 450X gets range update, now 146km",
+  "India EV market crosses 1.5M units milestone",
+  "Mahindra BE.07 bookings open at Rs 1,499",
+  "Maruti Suzuki EV production starts at Manesar plant",
+];
+
+const categories = [
+  "All",
+  "Passenger EVs",
+  "Two-Wheelers",
+  "Commercial",
+  "Charging Infra",
+  "Battery Tech",
+  "Policy",
+  "Startups & Funding",
+  "Market Data",
+  "India",
+  "Global",
+];
+
+const stories = [
+  ["Battery Tech / India", "LFP vs NMC: Why Indian OEMs are betting on iron-phosphate chemistry despite the range trade-off", "Tata, MG, and BYD have all standardised on LFP for their Indian lineup. We break down the thermal, cost, and longevity reasons behind this shift.", "Rajan Verma / 8 min / Yesterday", "B"],
+  ["Charging Infra / Analysis", "India's DC fast charger rollout is stalling and the culprit is land, not money", "Despite aggressive targets, DCFC deployment is running at 40% of planned pace. We investigated 6 months of tender data across 12 states.", "Ananya Singh / 11 min / 2 days ago", "C"],
+  ["Two-Wheelers / Review", "Ather Rizta review: The family scooter that finally makes electric practical for Tier 2 cities", "After 1,200km across Jaipur, Kota, and Ajmer, a real-world verdict on range anxiety, service access, and running costs.", "Kavya Nair / 14 min / 3 days ago", "S"],
+  ["Market / Data", "March 2025 EV sales data: Tata dominates, Mahindra surges, Ola slips", "Full breakdown of monthly registration data across categories, with segment-wise growth rates and market share shifts since Q4 2024.", "Data Desk / 5 min / 4 days ago", "D"],
+  ["Policy / Startup", "PLI 2.0 for Advanced Chemistry Cells: What the revised targets mean for battery startups", "The government's revised PLI scheme raises the performance bar for cell manufacturers. We speak to three startups navigating the new landscape.", "Kiran Bhat / 10 min / 5 days ago", "P"],
+  ["Passenger EVs / Launch", "Mahindra BE.07 first drive: Bold, brash, and the most range we've tested in India", "At 683km ARAI, the BE.07 rewrites the range narrative. But it is the driving dynamics and software that truly set it apart from the Nexon EV.", "Meera Pillai / 12 min / 6 days ago", "E"],
+] as const;
+
+const sales = [
+  { brand: "Tata Motors", value: "18,240", change: "+12.4%", up: true, share: "41.2%", width: 82 },
+  { brand: "Mahindra EV", value: "9,870", change: "+34.1%", up: true, share: "22.3%", width: 44 },
+  { brand: "Ola Electric", value: "7,512", change: "-8.2%", up: false, share: "17.0%", width: 34 },
+  { brand: "Ather Energy", value: "5,340", change: "+22.7%", up: true, share: "12.1%", width: 24 },
+  { brand: "MG Motor", value: "3,210", change: "+5.8%", up: true, share: "7.3%", width: 15 },
+];
 
 export default function Home() {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterState, setNewsletterState] = useState<"idle" | "error" | "subscribed">("idle");
+  const [animatedBars, setAnimatedBars] = useState(false);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const widgetRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const node = widgetRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setAnimatedBars(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const handleSubscribe = () => {
+    setNewsletterState(newsletterEmail.includes("@") ? "subscribed" : "error");
+  };
+
+  const toggleTag = (tag: string) => {
+    setActiveTags((current) =>
+      current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag]
+    );
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-[var(--wh)] text-[var(--txt)]">
+      <div className="overflow-hidden bg-[var(--grn)] py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
+        <div className="ticker-track flex w-max whitespace-nowrap">
+          {[...tickerItems, ...tickerItems].map((item, index) => (
+            <span key={`${item}-${index}`} className="mx-10 inline-block">[ {item} ]</span>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--brd)] bg-white/95 px-5 py-4 backdrop-blur md:px-12">
+        <a href="#" className="font-display text-[30px] leading-none tracking-[0.06em] text-[var(--blk)]">EV<span className="text-[var(--grn)]">TIMES</span></a>
+        <ul className="hidden items-center gap-8 md:flex">
+          {["Vehicles", "Charging", "Policy", "Battery Tech", "Startups", "Market"].map((item) => (
+            <li key={item}><a href="#" className="text-xs font-medium uppercase tracking-[0.08em] text-[var(--txt2)] transition hover:text-[var(--grn)]">{item}</a></li>
+          ))}
+        </ul>
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs font-medium text-[var(--grn)] transition hover:bg-[var(--grn-xlight)]">Sign in</Link>
+          <Link href="/signup" className="rounded bg-[var(--grn)] px-5 py-2 text-xs font-medium text-white transition hover:bg-[var(--grn-acc)]">Subscribe</Link>
         </div>
-      </main>
-    </div>
+      </nav>
+
+      <div className="flex flex-wrap items-center gap-3 border-b border-[var(--brd)] bg-[var(--grn-xlight)] px-5 py-3 text-sm md:px-12">
+        <span className="rounded bg-[var(--grn)] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white">Breaking</span>
+        <p>Cabinet approves FAME III with Rs 12,000 crore outlay <a href="#" className="font-medium text-[var(--grn)] hover:underline">read the full analysis -&gt;</a></p>
+      </div>
+
+      <section className="grid border-b border-[var(--brd)] lg:grid-cols-2">
+        <div className="relative overflow-hidden border-b border-[var(--brd)] bg-white px-6 py-10 lg:border-b-0 lg:border-r lg:px-12 lg:py-14">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_90%,rgba(45,122,31,0.06)_0%,transparent_60%)]" />
+          <div className="relative flex min-h-[430px] flex-col justify-between">
+            <div>
+              <div className="animate-fade-up inline-flex items-center rounded border border-[var(--brd-dark)] bg-[var(--grn-xlight)] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--grn-acc)]">Policy / Analysis</div>
+              <h1 className="animate-fade-up text-balance font-serif pt-6 text-[34px] leading-[1.08] text-[var(--blk)] md:text-[48px]">India&apos;s <em className="text-[var(--grn)]">FAME III</em> subsidy scheme could reshape the EV market and here is what we know</h1>
+            </div>
+            <div className="relative z-10 mt-8">
+              <p className="animate-fade-up max-w-2xl text-sm leading-7 text-[var(--txt2)] md:text-[15px]">The government is expected to announce a revised subsidy structure that extends support to private four-wheelers for the first time, potentially unlocking demand from a segment that has remained price-sensitive.</p>
+              <div className="animate-fade-up mt-5 flex flex-wrap items-center gap-3 text-xs text-[var(--txt3)]">
+                <span className="font-medium text-[var(--blk)]">Priya Mehta</span>
+                <span className="h-1 w-1 rounded-full bg-[var(--grn-mid)]" />
+                <span>6 min read</span>
+                <span className="h-1 w-1 rounded-full bg-[var(--grn-mid)]" />
+                <span>2 hours ago</span>
+              </div>
+              <button className="animate-fade-up mt-6 rounded bg-[var(--grn)] px-6 py-3 text-sm font-medium text-white transition hover:bg-[var(--grn-acc)]">Read article -&gt;</button>
+            </div>
+          </div>
+        </div>
+        <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden bg-[var(--grn-xlight)]">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_39px,rgba(45,122,31,0.06)_40px),linear-gradient(to_bottom,transparent_39px,rgba(45,122,31,0.06)_40px)] bg-[size:40px_40px]" />
+          <div className="font-display relative z-10 text-[120px] leading-none tracking-[-0.05em] text-transparent [-webkit-text-stroke:2px_rgba(45,122,31,0.25)] md:text-[180px]">EV</div>
+          <div className="absolute bottom-6 right-6 z-10 rounded bg-[var(--grn)] px-4 py-2 text-[11px] font-medium uppercase tracking-[0.08em] text-white">Cover Story</div>
+        </div>
+      </section>
+
+      <section className="grid border-b border-[var(--brd)] lg:grid-cols-[2fr_1fr_1fr]">
+        {[
+          ["Market / India", "March 2025 EV report: India crosses 200,000 monthly units for the first time", "Passenger EVs, two-wheelers, and commercial vehicles all posted record numbers this March. We examine what drove the surge and whether it is sustainable.", "Data Desk / 9 min / 1 day ago", true],
+          ["Battery / Research", "Solid-state batteries are coming to India sooner than expected", "An exclusive conversation on the 2027 timeline, cell chemistry choices, and why India's heat conditions require a unique approach.", "Rajan Verma / 7 min / 2 days ago", false],
+          ["Charging / Infra", "How Charge Zone plans to deploy 10,000 DCFC stations by 2026", "The startup's blueprint: highways first, then Tier 2 cities, then apartments.", "Ananya Singh / 5 min / 3 days ago", false],
+        ].map(([tag, title, excerpt, meta, large]) => (
+          <a key={title} href="#" className="border-r border-[var(--brd)] px-6 py-8 transition hover:bg-[var(--grn-xlight)] last:border-r-0 md:px-9">
+            <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--grn)]">{tag}</p>
+            <h2 className={`font-serif mt-3 text-[var(--blk)] ${large ? "text-[28px] leading-[1.2]" : "text-[20px] leading-[1.3]"}`}>{title}</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--txt2)]">{excerpt}</p>
+            <p className="mt-3 text-xs text-[var(--txt3)]">{meta}</p>
+          </a>
+        ))}
+      </section>
+
+      <div className="flex overflow-x-auto border-b border-[var(--brd)] bg-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {categories.map((item) => (
+          <button key={item} type="button" onClick={() => setActiveCategory(item)} className={`shrink-0 whitespace-nowrap border-r border-[var(--brd)] px-6 py-3 text-[11px] font-medium uppercase tracking-[0.08em] transition ${activeCategory === item ? "bg-[var(--grn-xlight)] text-[var(--grn)]" : "text-[var(--txt2)] hover:bg-[var(--gry)] hover:text-[var(--blk)]"}`}>{item}</button>
+        ))}
+      </div>
+
+      <div className="grid xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="border-r border-[var(--brd)]">
+          <div className="flex items-center justify-between border-b border-[var(--brd)] px-6 py-5 md:px-12">
+            <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--txt2)]">Latest stories</span>
+            <select className="rounded border border-[var(--brd)] bg-transparent px-3 py-1 text-[11px] text-[var(--txt2)] outline-none transition focus:border-[var(--grn)]">
+              <option>Most Recent</option>
+              <option>Most Read</option>
+              <option>Trending</option>
+            </select>
+          </div>
+
+          {stories.map(([tag, title, excerpt, meta, icon]) => (
+            <a key={title} href="#" className="grid gap-5 border-b border-[var(--brd)] px-6 py-7 transition hover:bg-[var(--grn-xlight)] md:grid-cols-[minmax(0,1fr)_120px] md:px-12">
+              <div>
+                <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--grn)]">{tag}</p>
+                <h3 className="font-serif mt-2 text-[22px] leading-[1.3] text-[var(--blk)]">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--txt2)]">{excerpt}</p>
+                <p className="mt-4 text-xs text-[var(--txt3)]">{meta}</p>
+              </div>
+              <div className="mt-1 flex h-[90px] w-[120px] items-center justify-center rounded border border-[var(--brd)] bg-[var(--grn-xlight)] font-display text-4xl text-[var(--grn-dark)]">{icon}</div>
+            </a>
+          ))}
+
+          <div className="border-b border-[var(--brd)] px-6 py-7 text-center md:px-12">
+            <button className="rounded border border-[var(--brd-dark)] px-8 py-3 text-xs font-medium text-[var(--grn)] transition hover:border-[var(--grn)] hover:bg-[var(--grn-xlight)]">Load more stories</button>
+          </div>
+        </section>
+
+        <aside className="bg-white">
+          <div className="border-b border-[var(--brd)] px-5 py-6">
+            <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--txt2)]">Trending this week</h3>
+            <div className="mt-4 space-y-3">
+              {["Tata Curvv EV deliveries begin, 47,000 bookings pending", "V2G in India: Tata Power pilots bidirectional charging in Mumbai", "Explained: What the new BIS standards mean for EV charger safety", "Reliance's $2B battery gigafactory progress report"].map((item, index) => (
+                <a key={item} href="#" className="flex gap-3 rounded p-2 transition hover:bg-[var(--grn-xlight)]">
+                  <span className="font-display w-8 shrink-0 text-[32px] leading-none text-[var(--grn-light)]">{String(index + 1).padStart(2, "0")}</span>
+                  <span>
+                    <span className="font-serif text-[15px] leading-[1.35] text-[var(--blk)]">{item}</span>
+                    <span className="mt-1 block text-xs text-[var(--txt3)]">{12 - index * 2}.4k reads / {["Passenger", "Charging", "Policy", "Battery"][index]}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-b border-[var(--brd)] px-5 py-6">
+            <div className="rounded-md border border-[var(--brd)] bg-[var(--grn-xlight)] p-5">
+              <h3 className="font-serif text-[22px] leading-[1.25] text-[var(--blk)]">The EV brief, <em className="text-[var(--grn)]">every morning</em></h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--txt2)]">One sharp summary of what moved in the EV world. No noise, no ads. 3 minutes.</p>
+              <input type="email" value={newsletterEmail} disabled={newsletterState === "subscribed"} onChange={(event) => { setNewsletterEmail(event.target.value); if (newsletterState !== "idle") setNewsletterState("idle"); }} placeholder="your@email.com" className={`mt-4 w-full rounded border bg-white px-4 py-2.5 text-sm text-[var(--txt)] outline-none transition ${newsletterState === "error" ? "border-red-500" : "border-[var(--brd-dark)] focus:border-[var(--grn)]"} ${newsletterState === "subscribed" ? "opacity-60" : ""}`} />
+              <button type="button" onClick={handleSubscribe} className={`mt-3 w-full rounded px-4 py-2.5 text-sm font-medium text-white transition ${newsletterState === "subscribed" ? "bg-[var(--grn-acc)]" : "bg-[var(--grn)] hover:bg-[var(--grn-acc)]"}`}>{newsletterState === "subscribed" ? "You&apos;re subscribed!" : "Get the brief -&gt;"}</button>
+            </div>
+          </div>
+
+          <div className="border-b border-[var(--brd)] px-5 py-6">
+            <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--txt2)]">Editor&apos;s picks</h3>
+            <div className="mt-4 space-y-3">
+              {[
+                ["Global / Insight", "Why China's EV dominance is a warning for India's nascent industry", "Priya Mehta / 16 min read", "G"],
+                ["Technology / Deep Dive", "The BMS arms race: How Indian startups are building better battery management", "Rajan Verma / 13 min read", "T"],
+              ].map(([tag, title, meta, image]) => (
+                <a key={title} href="#" className="block rounded p-2 transition hover:bg-[var(--grn-xlight)]">
+                  <div className="mb-3 flex h-28 items-center justify-center rounded border border-[var(--brd)] bg-[var(--grn-xlight)] font-display text-5xl text-[var(--grn-dark)]">{image}</div>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.07em] text-[var(--grn)]">{tag}</p>
+                  <h4 className="font-serif mt-1 text-[17px] leading-[1.3] text-[var(--blk)]">{title}</h4>
+                  <p className="mt-1 text-xs text-[var(--txt3)]">{meta}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-b border-[var(--brd)] px-5 py-6">
+            <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--txt2)]">Share this issue</h3>
+            <div className="mt-4 space-y-3">
+              {[
+                ["Share on X (Twitter)", "X", "2.1k", "bg-black"],
+                ["Share on LinkedIn", "in", "847", "bg-[#0a66c2]"],
+                ["Share on WhatsApp", "WA", "5.3k", "bg-[#25d366]"],
+              ].map(([label, icon, count, bg]) => (
+                <a key={label} href="#" className="flex items-center gap-3 rounded border border-[var(--brd)] px-4 py-3 text-sm text-[var(--txt)] transition hover:border-[var(--grn)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn)]">
+                  <span className={`flex h-[18px] w-[18px] items-center justify-center rounded text-[10px] font-bold text-white ${bg}`}>{icon}</span>
+                  <span>{label}</span>
+                  <span className="ml-auto text-xs text-[var(--txt3)]">{count}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="px-5 py-6">
+            <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--txt2)]">Browse by topic</h3>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["Tata EV", "FAME Subsidy", "BYD India", "LFP Battery", "Ola Electric", "DCFC", "Ather", "Tesla India", "V2G", "PLI Scheme", "Charging Network", "NMC", "MG Motor", "Range Anxiety", "Mahindra EV", "Solid State", "Maruti EV"].map((tag) => {
+                const active = activeTags.includes(tag);
+                return (
+                  <button key={tag} type="button" onClick={() => toggleTag(tag)} className={`rounded border px-3 py-1.5 text-xs transition ${active ? "border-[var(--grn)] bg-[var(--grn-xlight)] text-[var(--grn)]" : "border-[var(--brd)] bg-white text-[var(--txt2)] hover:border-[var(--grn)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn)]"}`}>{tag}</button>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section className="border-b border-[var(--brd)]">
+        <div className="flex items-center gap-3 border-b border-[var(--brd)] px-5 py-5 md:px-12">
+          <h2 className="font-display text-[24px] tracking-[0.04em] text-[var(--blk)]">Opinion &amp; Analysis</h2>
+          <a href="#" className="ml-auto text-xs text-[var(--txt3)] hover:text-[var(--grn)]">See all columns -&gt;</a>
+        </div>
+        <div className="grid md:grid-cols-3">
+          {[
+            ["PM", "Priya Mehta", "Policy Editor", "FAME III is too little, too late and India needs a 10-year EV industrial policy", "The subsidy-led approach has delivered modest gains, but a structural transformation of India's auto sector demands something bolder."],
+            ["RV", "Rajan Verma", "Technology Correspondent", "The real bottleneck is not batteries, it is software engineers who understand EVs and the grid", "Hardware competitiveness is nearly solved. The next decade will be won by companies that can write firmware for India's electrical reality."],
+            ["AS", "Ananya Singh", "Infrastructure Analyst", "Why India's charging network needs a single interoperability standard right now", "With competing protocols and no clear mandate, the public charging ecosystem is fragmenting fast. The window for a unified standard is closing."],
+          ].map(([initials, author, role, title, excerpt]) => (
+            <a key={title} href="#" className="border-r border-[var(--brd)] px-6 py-7 transition hover:bg-[var(--grn-xlight)] last:border-r-0 md:px-9">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[var(--brd-dark)] bg-[var(--grn-xlight)] text-sm font-medium text-[var(--grn-acc)]">{initials}</div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--blk)]">{author}</p>
+                  <p className="text-xs text-[var(--txt3)]">{role}</p>
+                </div>
+              </div>
+              <h3 className="font-serif mt-4 text-[20px] leading-[1.3] text-[var(--blk)]">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-[var(--txt2)]">{excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <div className="flex flex-col items-center justify-center gap-4 border-b border-[var(--brd)] bg-[var(--gry)] px-5 py-4 md:flex-row md:px-12">
+        <span className="text-[9px] uppercase tracking-[0.12em] text-[var(--txt3)]">Sponsored</span>
+        <a href="#" className="flex w-full max-w-4xl flex-col items-center justify-center gap-3 rounded border border-[var(--brd)] bg-white px-6 py-4 text-center text-sm text-[var(--txt)] transition hover:border-[var(--grn)] md:flex-row">
+          <span className="font-display text-2xl text-[var(--grn)]">P</span>
+          <span>ChargeGrid Pro - India&apos;s most reliable home EV charger. Install in 2 hours, compatible with all EVs.</span>
+          <span className="rounded bg-[var(--grn)] px-3 py-1.5 text-xs font-medium text-white">Learn more</span>
+        </a>
+      </div>
+
+      <section ref={widgetRef} className="border-b border-[var(--brd)]">
+        <div className="flex items-center gap-3 border-b border-[var(--brd)] px-5 py-5 md:px-12">
+          <h2 className="font-display text-[24px] tracking-[0.04em] text-[var(--blk)]">EV Sales Tracker</h2>
+          <span className="rounded border border-[var(--brd)] bg-[var(--grn-xlight)] px-3 py-1 text-xs uppercase tracking-[0.04em] text-[var(--grn-acc)]">March 2025</span>
+        </div>
+
+        <div className="grid border-b border-[var(--brd)] sm:grid-cols-2 lg:grid-cols-5">
+          {sales.map((item) => (
+            <div key={item.brand} className="border-r border-[var(--brd)] px-7 py-5 transition hover:bg-[var(--gry)] last:border-r-0">
+              <p className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)]">{item.brand}</p>
+              <p className="font-display mt-2 text-[34px] leading-none text-[var(--blk)]">{item.value}</p>
+              <p className={`mt-1 text-xs font-medium ${item.up ? "text-[var(--grn)]" : "text-[#c0392b]"}`}>{item.up ? "Up " : "Down "}{item.change}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-4 px-5 py-5 md:px-12">
+          {sales.map((item, index) => (
+            <div key={item.brand} className="flex items-center gap-4 text-sm">
+              <span className="w-24 shrink-0 text-[var(--txt2)]">{item.brand.replace(" EV", "")}</span>
+              <div className="h-2 flex-1 overflow-hidden rounded bg-[var(--gry2)]">
+                <div className="h-full rounded bg-[var(--grn)] transition-all duration-1000 ease-out" style={{ width: animatedBars ? `${item.width}%` : "0%", transitionDelay: `${index * 100}ms` }} />
+              </div>
+              <span className="w-14 shrink-0 text-right font-medium text-[var(--txt)]">{item.share}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid bg-[var(--grn-xlight)] sm:grid-cols-2 lg:grid-cols-4">
+        {[["2,400+", "Articles published"], ["38K", "Newsletter readers"], ["14", "Staff journalists"], ["Daily", "EV market coverage"]].map(([value, label], index, array) => (
+          <div key={label} className={`px-8 py-8 transition hover:bg-[rgba(45,122,31,0.06)] ${index < array.length - 1 ? "border-r border-[var(--brd)]" : ""}`}>
+            <div className="font-display text-[48px] leading-none text-[var(--grn)]">{value}</div>
+            <div className="mt-2 text-xs uppercase tracking-[0.05em] text-[var(--txt2)]">{label}</div>
+          </div>
+        ))}
+      </section>
+
+      <footer className="border-t border-[var(--grn-acc)] bg-[var(--blk)] text-white">
+        <div className="grid gap-10 px-6 py-12 md:grid-cols-2 md:px-12 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+          <div>
+            <div className="font-display text-[34px] tracking-[0.06em]">EV<span className="text-[var(--grn-mid)]">TIMES</span></div>
+            <p className="mt-4 max-w-xs text-sm leading-7 text-white/55">India&apos;s most trusted independent source for electric vehicle news, analysis, and data. Covering the EV transition since 2020.</p>
+            <div className="mt-5 flex gap-3">{["X", "in", "yt", "ig"].map((item) => <a key={item} href="#" className="flex h-9 w-9 items-center justify-center rounded border border-white/15 text-xs text-white/50 transition hover:border-[var(--grn-mid)] hover:text-[var(--grn-mid)]">{item}</a>)}</div>
+          </div>
+          {[
+            ["Coverage", ["Vehicles", "Charging Infrastructure", "Battery Technology", "Policy & Regulation", "Startups & Funding", "Market Data"]],
+            ["Company", ["About EVTimes", "Our Journalists", "Editorial Standards", "Advertise With Us", "Careers", "Contact"]],
+            ["Resources", ["EV Buyer's Guide", "Charging Station Map", "Subsidy Calculator", "Range Database", "RSS Feed", "Newsletter Archive"]],
+          ].map(([title, items]) => (
+            <div key={title as string}>
+              <h3 className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--grn-mid)]">{title as string}</h3>
+              <ul className="mt-4 space-y-3">{(items as string[]).map((item) => <li key={item}><a href="#" className="text-sm text-white/55 transition hover:text-[var(--grn-mid)]">{item}</a></li>)}</ul>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-white/10 px-6 py-4 text-center text-xs text-white/35 md:flex-row md:px-12">
+          <p>(c) 2025 EVTimes Media Pvt. Ltd. Independent EV journalism.</p>
+          <div className="flex flex-wrap items-center justify-center gap-5">{["Privacy Policy", "Terms of Use", "Cookie Policy", "Sitemap"].map((item) => <a key={item} href="#" className="transition hover:text-[var(--grn-mid)]">{item}</a>)}</div>
+        </div>
+      </footer>
+    </main>
   );
 }
+
