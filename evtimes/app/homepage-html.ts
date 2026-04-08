@@ -32,8 +32,8 @@ export const homepageHtml = String.raw`<!-- TICKER -->
     <li><a href="#">Market</a></li>
   </ul>
   <div class="nav-right">
-    <button class="btn-ghost">Sign in</button>
-    <button class="btn-green">Subscribe</button>
+    <a href="/sign-in" class="btn-ghost">Sign in</a>
+    <a href="/subscribe" class="btn-green">Subscribe</a>
   </div>
 </nav>
 
@@ -63,7 +63,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
         <span class="dot"></span>
         <span>2 hours ago</span>
       </div>
-      <button class="hero-read-btn">Read article →</button>
+      <a href="/fame-iii-subsidy-scheme-could-reshape-the-ev-market" class="hero-read-btn">Read article →</a>
     </div>
   </div>
   <div class="hero-image-col">
@@ -74,19 +74,19 @@ export const homepageHtml = String.raw`<!-- TICKER -->
 
 <!-- SECOND HERO ROW -->
 <div class="second-hero">
-  <a href="#" class="sh-card">
+  <a href="/march-2025-ev-report-india-crosses-200000-monthly-units" class="sh-card">
     <div class="sh-tag">Market · India</div>
     <div class="sh-title">March 2025 EV report: India crosses 200,000 monthly units for the first time — a milestone five years in the making</div>
     <div class="sh-excerpt">Passenger EVs, two-wheelers, and commercial vehicles all posted record numbers this March. We examine what drove the surge and whether it's sustainable.</div>
     <div class="sh-meta">Data Desk · 9 min · 1 day ago</div>
   </a>
-  <a href="#" class="sh-card">
+  <a href="/solid-state-batteries-coming-to-india-sooner-than-expected" class="sh-card">
     <div class="sh-tag">Battery · Research</div>
     <div class="sh-title sh-title-sm">Solid-state batteries are coming to India sooner than expected — Tata's R&D chief speaks</div>
     <div class="sh-excerpt">An exclusive conversation on the 2027 timeline, cell chemistry choices, and why India's heat conditions require a unique approach.</div>
     <div class="sh-meta">Rajan Verma · 7 min · 2 days ago</div>
   </a>
-  <a href="#" class="sh-card">
+  <a href="/how-charge-zone-plans-to-deploy-10000-dcfc-stations-by-2026" class="sh-card">
     <div class="sh-tag">Charging · Infra</div>
     <div class="sh-title sh-title-sm">How Charge Zone plans to deploy 10,000 DCFC stations by 2026</div>
     <div class="sh-excerpt">The startup's blueprint: highways first, then Tier 2 cities, then apartments. We map out the strategy and the funding behind it.</div>
@@ -123,7 +123,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       </select>
     </div>
 
-    <a href="#" class="article-card">
+    <a href="/lfp-vs-nmc-why-indian-oems-are-betting-on-iron-phosphate" class="article-card">
       <div>
         <div class="card-tag">Battery Tech · India</div>
         <div class="card-title">LFP vs NMC: Why Indian OEMs are betting on iron-phosphate chemistry despite the range trade-off</div>
@@ -135,7 +135,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="card-img">🔋</div>
     </a>
 
-    <a href="#" class="article-card">
+    <a href="/indias-dc-fast-charger-rollout-is-stalling" class="article-card">
       <div>
         <div class="card-tag">Charging Infra · Analysis</div>
         <div class="card-title">India's DC fast charger rollout is stalling — and the culprit is land, not money</div>
@@ -147,7 +147,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="card-img">⚡</div>
     </a>
 
-    <a href="#" class="article-card">
+    <a href="/ather-rizta-review-family-scooter-electric-practical" class="article-card">
       <div>
         <div class="card-tag">Two-Wheelers · Review</div>
         <div class="card-title">Ather Rizta review: The family scooter that finally makes electric practical for Tier 2 cities</div>
@@ -159,7 +159,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="card-img">🛵</div>
     </a>
 
-    <a href="#" class="article-card">
+    <a href="/march-2025-ev-sales-data-tata-dominates-mahindra-surges-ola-slips" class="article-card">
       <div>
         <div class="card-tag">Market · Data</div>
         <div class="card-title">March 2025 EV sales data: Tata dominates, Mahindra surges, Ola slips</div>
@@ -171,7 +171,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="card-img">📊</div>
     </a>
 
-    <a href="#" class="article-card">
+    <a href="/pli-2-revised-targets-mean-for-battery-startups" class="article-card">
       <div>
         <div class="card-tag">Policy · Startup</div>
         <div class="card-title">PLI 2.0 for Advanced Chemistry Cells: What the revised targets mean for battery startups</div>
@@ -183,7 +183,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="card-img">🏭</div>
     </a>
 
-    <a href="#" class="article-card">
+    <a href="/mahindra-be07-first-drive-most-range-tested-in-india" class="article-card">
       <div>
         <div class="card-tag">Passenger EVs · Launch</div>
         <div class="card-title">Mahindra BE.07 first drive: Bold, brash, and the most range we've tested in India</div>
@@ -205,34 +205,34 @@ export const homepageHtml = String.raw`<!-- TICKER -->
 
     <div class="sidebar-section">
       <div class="sidebar-title">Trending this week</div>
-      <div class="trending-item">
+      <a href="/tata-curvv-ev-deliveries-begin-47000-bookings-pending" class="trending-item">
         <div class="trending-num">01</div>
         <div>
           <div class="trending-title">Tata Curvv EV deliveries begin — 47,000 bookings pending</div>
           <div class="trending-meta">12.4k reads · Passenger</div>
         </div>
-      </div>
-      <div class="trending-item">
+      </a>
+      <a href="/v2g-in-india-tata-power-pilots-bidirectional-charging-in-mumbai" class="trending-item">
         <div class="trending-num">02</div>
         <div>
           <div class="trending-title">V2G in India: Tata Power pilots bidirectional charging in Mumbai</div>
           <div class="trending-meta">9.1k reads · Charging</div>
         </div>
-      </div>
-      <div class="trending-item">
+      </a>
+      <a href="/what-the-new-bis-standards-mean-for-ev-charger-safety" class="trending-item">
         <div class="trending-num">03</div>
         <div>
           <div class="trending-title">Explained: What the new BIS standards mean for EV charger safety</div>
           <div class="trending-meta">7.8k reads · Policy</div>
         </div>
-      </div>
-      <div class="trending-item">
+      </a>
+      <a href="/reliance-2b-battery-gigafactory-progress-report" class="trending-item">
         <div class="trending-num">04</div>
         <div>
           <div class="trending-title">Reliance's $2B battery gigafactory — progress report</div>
           <div class="trending-meta">6.2k reads · Battery</div>
         </div>
-      </div>
+      </a>
     </div>
 
     <div class="sidebar-section">
@@ -246,13 +246,13 @@ export const homepageHtml = String.raw`<!-- TICKER -->
 
     <div class="sidebar-section">
       <div class="sidebar-title">Editor's picks</div>
-      <a href="#" class="sb-feature">
+      <a href="/why-chinas-ev-dominance-is-a-warning-for-indias-nascent-industry" class="sb-feature">
         <div class="sb-feature-img">🌏</div>
         <div class="sb-feature-tag">Global · Insight</div>
         <div class="sb-feature-title">Why China's EV dominance is a warning for India's nascent industry</div>
         <div class="sb-feature-meta">Priya Mehta · 16 min read</div>
       </a>
-      <a href="#" class="sb-feature">
+      <a href="/the-bms-arms-race-how-indian-startups-are-building-better-battery-management" class="sb-feature">
         <div class="sb-feature-tag">Technology · Deep Dive</div>
         <div class="sb-feature-title">The BMS arms race: How Indian startups are building better battery management</div>
         <div class="sb-feature-meta">Rajan Verma · 13 min read</div>
@@ -313,7 +313,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
     <span>See all columns →</span>
   </div>
   <div class="opinion-grid">
-    <a href="#" class="opinion-card">
+    <a href="/fame-iii-too-little-too-late-india-needs-10-year-ev-policy" class="opinion-card">
       <div class="opinion-author-row">
         <div class="opinion-avatar">PM</div>
         <div>
@@ -324,7 +324,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="opinion-title">FAME III is too little, too late — India needs a 10-year EV industrial policy, not another subsidy patch</div>
       <div class="opinion-excerpt">The subsidy-led approach has delivered modest gains, but a structural transformation of India's auto sector demands something bolder: demand certainty, supply chain investment, and a credible carbon price.</div>
     </a>
-    <a href="#" class="opinion-card">
+    <a href="/real-bottleneck-isnt-batteries-its-software-engineers" class="opinion-card">
       <div class="opinion-author-row">
         <div class="opinion-avatar">RV</div>
         <div>
@@ -335,7 +335,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <div class="opinion-title">The real bottleneck isn't batteries — it's software engineers who understand both EVs and India's grid</div>
       <div class="opinion-excerpt">Hardware competitiveness is nearly solved. The next decade will be won by companies that can write firmware for the unique demands of India's electrical infrastructure.</div>
     </a>
-    <a href="#" class="opinion-card">
+    <a href="/indias-charging-network-needs-single-interoperability-standard" class="opinion-card">
       <div class="opinion-author-row">
         <div class="opinion-avatar">AS</div>
         <div>
