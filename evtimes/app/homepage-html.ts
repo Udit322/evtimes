@@ -486,6 +486,19 @@ export const homepageHtml = String.raw`<!-- TICKER -->
       <li><a href="#">Newsletter Archive</a></li>
     </ul>
   </div>
+  <div class="footer-col">
+    <h4>State</h4>
+    <ul>
+      <li><a href="#">Rajasthan</a></li>
+      <li><a href="#">Uttar pradesh</a></li>
+      <li><a href="#">Haryana</a></li>
+      <li><a href="#">Punjab</a></li>
+      <li><a href="#">Maharashtra</a></li>
+      <li><a href="#">Gujarat</a></li>
+    </ul>
+  </div>
+ 
+   
 </div>
 
 <footer class="bottom">
