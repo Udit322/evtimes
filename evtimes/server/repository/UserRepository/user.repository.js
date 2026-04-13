@@ -4,6 +4,10 @@ export const createUser = async (data) => {
   return await User.create(data);
 };
 
+export const getAllUsers = async () => {
+  return await User.find().select("-password"); // never send password
+};
+
 export const findUserByEmail = async (email) => {
   return await User.findOne({ email });
 };
