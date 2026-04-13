@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/api/auth/login/route.js", "app/api/auth/register/route.js", "server/utils/hash.js", "server/utils/jwt.js", "server/utils/validator.js", "server/model/UserModel/user.model.js", "server/repository/UserRepository/user.repository.js"  ],
   "exclude": ["node_modules"]
 }
