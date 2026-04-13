@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getStoredUser } from "../lib/mockAuth";
+import { getStoredUser, saveSessionUser } from "../lib/mockAuth";
 
-export default function Login() {
+function Login() {
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
@@ -50,8 +50,13 @@ export default function Login() {
       return;
     }
 
+    saveSessionUser({
+      name: storedUser.name,
+      email: storedUser.email,
+    });
+
     setIsSubmitting(true);
-    setSuccess(`Welcome back, ${storedUser.name}. Redirecting...`);
+    setSuccess(`Welcome back, ${storedUser.name}. Account saved. Redirecting...`);
 
     window.setTimeout(() => {
       setIsSubmitting(false);
@@ -60,16 +65,16 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,var(--grn-xlight)_0%,var(--wh)_100%)] px-4 py-8">
-      <div className="w-full max-w-md rounded-[28px] border border-[var(--brd)] bg-white p-8 shadow-[0_24px_60px_rgba(39,80,10,0.12)]">
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,var(--grn-xlight)_0%,var(--wh)_100%)] px-4 py-6 sm:py-8">
+      <div className="w-full max-w-md rounded-[24px] border border-[var(--brd)] bg-white p-5 shadow-[0_24px_60px_rgba(39,80,10,0.12)] sm:rounded-[28px] sm:p-8">
         <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-[var(--grn)]">
           Member Access
         </p>
-        <h2 className="mt-3 text-center text-3xl font-semibold text-[var(--blk)]">
+        <h2 className="mt-3 text-center text-2xl font-semibold text-[var(--blk)] sm:text-3xl">
           Login
         </h2>
         <p className="mt-3 text-center text-sm text-[var(--txt2)]">
-          Sign in with the account you created on signup.
+          Login with the account you created on signup.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -133,3 +138,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;

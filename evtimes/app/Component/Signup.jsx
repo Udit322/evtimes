@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { getStoredUser, saveUser } from "../lib/mockAuth";
+import { getStoredUser, saveSessionUser, saveUser } from "../lib/mockAuth";
 
-export default function Signup() {
+function Signup() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const authMode = searchParams.get("mode") === "login" ? "login" : "signup";
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -16,6 +17,13 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const switchAuthMode = (mode) => {
+    setError("");
+    setSuccess("");
+    setIsSubmitting(false);
+    router.replace(`/signup?mode=${mode}`);
+  };
 
   const handleChange = (event) => {
     setForm((current) => ({
@@ -34,11 +42,12 @@ export default function Signup() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const trimmedName = form.name.trim();
     const trimmedEmail = form.email.trim().toLowerCase();
+    const trimmedName = form.name.trim();
+    const trimmedPassword = form.password.trim();
 
-    if (!trimmedName || !trimmedEmail || !form.password.trim() || !form.confirmPassword.trim()) {
-      setError("Please fill in all fields.");
+    if (!trimmedEmail || !trimmedPassword) {
+      setError("Please fill in email and password.");
       return;
     }
 
@@ -47,8 +56,43 @@ export default function Signup() {
       return;
     }
 
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    if (trimmedPassword.length < 5) {
+      setError("Password must be at least 5 characters long.");
+      return;
+    }
+
+    const existingUser = getStoredUser();
+
+    if (authMode === "login") {
+      if (!existingUser || existingUser.email !== trimmedEmail) {
+        setError("No account found with this email. Please sign up first.");
+        return;
+      }
+
+      if (existingUser.password !== form.password) {
+        setError("Invalid password. Please try again.");
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      saveSessionUser({
+        name: existingUser.name,
+        email: existingUser.email,
+      });
+
+      setSuccess("Welcome back. Your account is saved. Redirecting...");
+
+      window.setTimeout(() => {
+        setIsSubmitting(false);
+        router.push("/");
+      }, 900);
+
+      return;
+    }
+
+    if (!trimmedName || !form.confirmPassword.trim()) {
+      setError("Please fill in all signup fields.");
       return;
     }
 
@@ -57,10 +101,8 @@ export default function Signup() {
       return;
     }
 
-    const existingUser = getStoredUser();
-
     if (existingUser?.email === trimmedEmail) {
-      setError("An account with this email already exists.");
+      setError("Account already exists. Please use Login tab.");
       return;
     }
 
@@ -72,42 +114,74 @@ export default function Signup() {
       password: form.password,
     });
 
-    setSuccess("Account created successfully. Redirecting to login...");
+    saveSessionUser({
+      name: trimmedName,
+      email: trimmedEmail,
+    });
+
+    setSuccess("Account created successfully. Your account is saved. Redirecting...");
 
     window.setTimeout(() => {
       setIsSubmitting(false);
-      router.push("/login");
+      router.push("/");
     }, 900);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,var(--wh)_0%,var(--grn-xlight)_100%)] px-4 py-8">
-      <div className="w-full max-w-md rounded-[28px] border border-[var(--brd)] bg-white p-8 shadow-[0_24px_60px_rgba(39,80,10,0.12)]">
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,var(--wh)_0%,var(--grn-xlight)_100%)] px-4 py-6 sm:py-8">
+      <div className="w-full max-w-md rounded-[24px] border border-[var(--brd)] bg-white p-5 shadow-[0_24px_60px_rgba(39,80,10,0.12)] sm:rounded-[28px] sm:p-8">
         <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-[var(--grn)]">
-          New Member
+          {authMode === "signup" ? "New Member" : "Member Access"}
         </p>
-        <h2 className="mt-3 text-center text-3xl font-semibold text-[var(--blk)]">
-          Sign Up
+        <h2 className="mt-3 text-center text-2xl font-semibold text-[var(--blk)] sm:text-3xl">
+          {authMode === "signup" ? "Sign Up" : "Login"}
         </h2>
         <p className="mt-3 text-center text-sm text-[var(--txt2)]">
-          Create your EVTimes account to continue.
+          {authMode === "signup"
+            ? "Create your EVTimes account."
+            : "Login with your saved EVTimes account."}
         </p>
 
+        <div className="mt-6 grid grid-cols-2 rounded-xl border border-[var(--brd)] bg-[var(--gry)] p-1">
+          <button
+            type="button"
+            onClick={() => {
+              switchAuthMode("signup");
+            }}
+            className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:text-sm ${authMode === "signup" ? "bg-white text-[var(--grn-dark)] shadow-sm" : "text-[var(--txt2)] hover:text-[var(--grn-dark)]"
+              }`}
+          >
+            Signup
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              switchAuthMode("login");
+            }}
+            className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:text-sm ${authMode === "login" ? "bg-white text-[var(--grn-dark)] shadow-sm" : "text-[var(--txt2)] hover:text-[var(--grn-dark)]"
+              }`}
+          >
+            Login
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="signup-name" className="text-sm font-medium text-[var(--txt)]">
-              Full Name
-            </label>
-            <input
-              id="signup-name"
-              type="text"
-              name="name"
-              placeholder="Enter your full name"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
-            />
-          </div>
+          {authMode === "signup" ? (
+            <div className="space-y-1.5">
+              <label htmlFor="signup-name" className="text-sm font-medium text-[var(--txt)]">
+                Full Name
+              </label>
+              <input
+                id="signup-name"
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
+              />
+            </div>
+          ) : null}
 
           <div className="space-y-1.5">
             <label htmlFor="signup-email" className="text-sm font-medium text-[var(--txt)]">
@@ -139,20 +213,22 @@ export default function Signup() {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="signup-confirm-password" className="text-sm font-medium text-[var(--txt)]">
-              Confirm Password
-            </label>
-            <input
-              id="signup-confirm-password"
-              type="password"
-              name="confirmPassword"
-              placeholder="Re-enter your password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
-            />
-          </div>
+          {authMode === "signup" ? (
+            <div className="space-y-1.5">
+              <label htmlFor="signup-confirm-password" className="text-sm font-medium text-[var(--txt)]">
+                Confirm Password
+              </label>
+              <input
+                id="signup-confirm-password"
+                type="password"
+                name="confirmPassword"
+                placeholder="Re-enter your password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
+              />
+            </div>
+          ) : null}
 
           {error ? (
             <p className="text-sm text-red-600">{error}</p>
@@ -167,20 +243,18 @@ export default function Signup() {
             disabled={isSubmitting}
             className="w-full rounded-xl bg-[var(--grn)] py-3 text-sm font-medium text-white transition hover:bg-[var(--grn-acc)] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? "Creating Account..." : "Sign Up"}
+            {isSubmitting ? (authMode === "signup" ? "Creating Account..." : "Logging In...") : authMode === "signup" ? "Sign Up" : "Login"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-[var(--txt2)]">
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[var(--grn)] hover:text-[var(--grn-acc)]"
-          >
-            Login
-          </Link>
+          {authMode === "signup"
+            ? "Already have an account? Switch to Login tab."
+            : "New user? Switch to Signup tab."}
         </p>
       </div>
     </div>
   );
 }
+
+export default Signup;

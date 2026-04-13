@@ -1,5 +1,5 @@
-import Login from "../Component/Login";
+import { redirect } from "next/navigation";
 
 export default function LoginPage() {
-  return <Login />;
+  redirect("/signup?mode=login");
 }

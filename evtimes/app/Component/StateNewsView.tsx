@@ -1,22 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { stateNews } from "../../lib/stateNews";
+import type { StateNewsItem } from "@/app/lib/stateNews";
 
-export function generateStaticParams() {
-  return stateNews.map((item) => ({ state: item.slug }));
-}
-
-export default async function StateNewsPage({
-  params,
-}: {
-  params: Promise<{ state: string }>;
-}) {
-  const { state } = await params;
-  const currentState = stateNews.find((item) => item.slug === state);
-
-  if (!currentState) {
-    notFound();
-  }
+type StateNewsViewProps = {
+  currentState: StateNewsItem;
+};
+export default function StateNewsView({ currentState }: StateNewsViewProps) {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fdfefb_0%,#f4f8ee_56%,#edf4e3_100%)] text-[var(--txt)]">
       <nav className="sticky top-0 z-50 border-b border-[var(--brd)] bg-white/92 px-4 py-4 backdrop-blur sm:px-5 md:px-12">
