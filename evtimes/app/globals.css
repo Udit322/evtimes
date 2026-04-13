@@ -20,10 +20,28 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--wh);
   color: var(--txt);
-  font-family: "DM Sans", Arial, sans-serif;
+  /* font-family: "DM Sans", Arial, sans-serif; */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }

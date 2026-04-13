@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { clearSessionUser, getSessionUser, subscribeToSessionChange } from "./lib/mockAuth";
 import { stateNews } from "./lib/stateNews";
 
 const tickerItems = [
@@ -14,7 +15,6 @@ const tickerItems = [
   "Mahindra BE.07 bookings open at Rs 1,499",
   "Maruti Suzuki EV production starts at Manesar plant",
 ];
-
 const categories = [
   "All",
   "Passenger EVs",
@@ -28,6 +28,8 @@ const categories = [
   "India",
   "Global",
 ];
+
+const navItems = ["Vehicles", "Charging", "Policy", "Battery Tech", "Startups", "Market"];
 
 const heroCards = [
   {
@@ -122,86 +124,300 @@ const sales = [
   { brand: "MG Motor", value: "3,210", change: "+5.8%", up: true, share: "7.3%", width: 15 },
 ];
 
-const footerColumns = [
-  {
-    title: "Sections",
-    links: ["Vehicles", "Charging", "Policy", "Battery Tech"],
-  },
-  {
-    title: "Company",
-    links: ["About", "Contact", "Advertise", "Careers"],
-  },
-  {
-    title: "Resources",
-    links: ["Newsletter", "Market Data", "Privacy Policy", "Terms"],
-  },
+const footerTopCategories = [
+  ["Passenger EV News", "Two-Wheeler EV", "Commercial EV", "Battery Swapping", "Charging Infra"],
+  ["Policy Updates", "FAME Scheme", "State Subsidy", "EV Startups", "Funding Deals"],
+  ["Tech Reviews", "Range Tests", "Charging Guides", "Battery Tech", "Ownership Cost"],
 ];
 
-const stateLinks = stateNews.map((item) => ({
+const footerStateLinks = stateNews.map((item) => ({
   label: item.state,
   href: `/state-news/${item.slug}`,
 }));
+
+const footerTrendingNews = [
+  [
+    "Tata Curvv EV deliveries start in 12 cities",
+    "Ola Gen-3 scooters claim better efficiency",
+    "Ather expands service grid in Rajasthan",
+    "MG Windsor EV crosses 10,000 bookings",
+    "Mahindra BE.07 waiting period grows",
+  ],
+  [
+    "BIS charger safety norms updated for public stations",
+    "Delhi adds 550 curbside charging slots",
+    "Bengaluru airport begins EV tug trial",
+    "UP transport plans fresh e-bus routes",
+    "Tamil Nadu suppliers secure export orders",
+  ],
+  [
+    "LFP cell prices soften for third straight quarter",
+    "Battery recycling startups raise fresh capital",
+    "Fleets shift to subscription charging models",
+    "Solar charging hubs pilot in Jaipur and Surat",
+    "Highway fast chargers hit utilization peak",
+  ],
+  [
+    "Vehicle-to-grid pilots start in Mumbai",
+    "Tier-2 cities accelerate EV taxi adoption",
+    "State DISCOMs announce new EV tariffs",
+    "Used EV market gains confidence in metro hubs",
+    "Public charging uptime improves to 97%",
+  ],
+];
+
+const footerLatestStories = [
+  [
+    "After range anxiety drops, premium EV adoption picks up in NCR corridors",
+    "How highway food plazas are becoming EV charging anchors",
+    "Fleet leasing firms push residual value guarantees for electric SUVs",
+    "A deep look at thermal management in Indian summer driving conditions",
+  ],
+  [
+    "Why apartment charging approvals still slow down city EV growth",
+    "Battery health reports may become standard in used EV resale market",
+    "Inside the fast-charging economics of intercity bus operators",
+    "How OTA updates are now deciding customer satisfaction scores",
+  ],
+  [
+    "The real cost split of running EV delivery fleets in dense traffic zones",
+    "State transport corporations test overnight depot charging schedules",
+    "Insurance products for EV batteries are finally becoming practical",
+    "Can micro-mobility EVs reduce inner-city logistics congestion?",
+  ],
+  [
+    "Charging etiquette and station queue rules: what users want next",
+    "How local component ecosystems are reducing EV assembly lead times",
+    "Rooftop solar plus EV charging: early ROI from residential pilots",
+    "Experts map what FAME III could mean for passenger EV pricing",
+  ],
+];
+
+const footerExpressGroup = [
+  ["EVTimes Hindi", "EVTimes Tamil", "EVTimes Marathi", "EV Market Weekly", "Charging Infra Desk"],
+  ["Battery Intelligence", "Mobility Policy Lab", "Auto Tech Reviews", "Startup Radar", "Careers"],
+];
+
+const footerQuickLinks = [
+  { label: "About", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Advertise With Us", href: "#" },
+  { label: "Brand Solutions", href: "#" },
+  { label: "Contact", href: "#" },
+  { label: "Signup", href: "/signup" },
+  { label: "Terms of Use", href: "#" },
+  { label: "CSR", href: "#" },
+];
+
+const footerSocialHandles = ["f", "x", "in", "ig"];
+
+type SessionUser = {
+  name: string;
+  email: string;
+};
+
 function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [email, setEmail] = useState("");
   const [newsletterState, setNewsletterState] = useState<"idle" | "error" | "subscribed">("idle");
-  const [animateBars, setAnimateBars] = useState(false);
-  const widgetRef = useRef<HTMLDivElement | null>(null);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const newsletterRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToNewsletter = () => {
-    newsletterRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
+  const sessionUser = useSyncExternalStore(
+    subscribeToSessionChange,
+    getSessionUser,
+    () => null
+  ) as SessionUser | null;
 
   useEffect(() => {
-    const node = widgetRef.current;
-    if (!node) return;
+    if (!isAccountMenuOpen) {
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setAnimateBars(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!accountMenuRef.current) {
+        return;
+      }
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+      const clickTarget = event.target as Node | null;
+      if (clickTarget && !accountMenuRef.current.contains(clickTarget)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handleOutsideClick);
+    return () => window.removeEventListener("mousedown", handleOutsideClick);
+  }, [isAccountMenuOpen]);
+
+  const handleSignOut = () => {
+    clearSessionUser();
+    setIsAccountMenuOpen(false);
+    setIsMobileNavOpen(false);
+  };
 
   return (
     <>
-      <main className="min-h-screen bg-[var(--wh)] text-[var(--txt)]">
-        <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--brd)] bg-white/95 px-5 py-4 backdrop-blur md:px-12">
-          <Link href="/" className="font-['Bebas_Neue'] text-[30px] tracking-[0.06em] text-[var(--blk)]">
-            EV<span className="text-[var(--grn)]">TIMES</span>
-          </Link>
-          <ul className="hidden gap-8 md:flex">
-            {["Vehicles", "Charging", "Policy", "Battery Tech", "Startups", "Market"].map((item) => (
-              <li key={item}>
-                <a href="#" className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:text-[var(--grn)]">
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <div className="flex gap-3">
-            <Link
-              href="/login"
-              className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
-            >
-              Sign in
+      <main className="min-h-screen overflow-x-hidden bg-[var(--wh)] text-[var(--txt)]">
+        <nav className="sticky top-0 z-50 border-b border-[var(--brd)] bg-white/95 px-4 py-4 backdrop-blur md:px-12">
+          <div className="flex items-center justify-between gap-3 sm:gap-6 md:grid md:grid-cols-[auto_1fr_auto] md:items-center">
+            <Link href="/" className="font-['Bebas_Neue'] text-[28px] tracking-[0.06em] text-[var(--blk)] md:text-[30px]">
+              EV<span className="text-[var(--grn)]">TIMES</span>
             </Link>
+
+            <div className="hidden justify-center md:flex">
+              <ul className="flex gap-8">
+                {navItems.map((item) => (
+                  <li key={item}>
+                    <a href="#" className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:text-[var(--grn)]">
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="hidden justify-self-end md:block">
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/signup?mode=login"
+                  className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup?mode=signup"
+                  className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
+                >
+                  Signup
+                </Link>
+
+                {sessionUser ? (
+                  <div ref={accountMenuRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsAccountMenuOpen((current) => !current)}
+                      className="rounded bg-[var(--grn)] px-4 py-2 text-xs font-medium text-white hover:bg-[var(--grn-acc)]"
+                    >
+                      {sessionUser.name.split(" ")[0] || "My Account"}
+                    </button>
+
+                    {isAccountMenuOpen ? (
+                      <div className="absolute right-0 top-[calc(100%+10px)] w-[min(240px,calc(100vw-2rem))] rounded-xl border border-[var(--brd)] bg-white p-3 shadow-[0_18px_38px_rgba(39,80,10,0.16)]">
+                        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--grn)]">
+                          Your account is saved
+                        </p>
+                        <p className="mt-1 text-sm font-medium text-[var(--blk)]">{sessionUser.name}</p>
+                        <p className="mt-0.5 text-xs text-[var(--txt3)]">{sessionUser.email}</p>
+
+                        <div className="mt-3 space-y-1.5 border-t border-[var(--brd)] pt-3">
+                          <Link
+                            href="/account"
+                            onClick={() => setIsAccountMenuOpen(false)}
+                            className="block rounded-lg px-3 py-2 text-sm text-[var(--txt2)] transition hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                          >
+                            My Account
+                          </Link>
+                          <Link
+                            href="/settings"
+                            onClick={() => setIsAccountMenuOpen(false)}
+                            className="block rounded-lg px-3 py-2 text-sm text-[var(--txt2)] transition hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                          >
+                            Settings
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={handleSignOut}
+                            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-[#b42318] transition hover:bg-[#fff1ef]"
+                          >
+                            Sign out
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
             <button
               type="button"
-              onClick={scrollToNewsletter}
-              className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
+              onClick={() => {
+                setIsMobileNavOpen((current) => !current);
+                setIsAccountMenuOpen(false);
+              }}
+              className="rounded border border-[var(--brd-dark)] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.08em] text-[var(--grn)] md:hidden"
             >
-              Subscribe
+              {isMobileNavOpen ? "Close" : "Menu"}
             </button>
           </div>
+
+          {isMobileNavOpen ? (
+            <div className="mt-4 space-y-4 border-t border-[var(--brd)] pt-4 md:hidden">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {navItems.map((item) => (
+                  <a
+                    key={item}
+                    href="#"
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className="rounded-lg border border-[var(--brd)] bg-[var(--gry)] px-3 py-2 text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                  >
+                    {item}
+                  </a>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Link
+                  href="/signup?mode=login"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex-1 rounded border border-[var(--brd-dark)] px-4 py-2 text-center text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup?mode=signup"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="flex-1 rounded bg-[var(--grn)] px-4 py-2 text-center text-xs text-white hover:bg-[var(--grn-acc)]"
+                >
+                  Signup
+                </Link>
+              </div>
+
+              {sessionUser ? (
+                <div className="rounded-xl border border-[var(--brd)] bg-[var(--gry)] p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--grn)]">
+                    Your account is saved
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-[var(--blk)]">{sessionUser.name}</p>
+                  <p className="mt-0.5 text-xs text-[var(--txt3)]">{sessionUser.email}</p>
+                  <div className="mt-3 grid grid-cols-1 gap-2">
+                    <Link
+                      href="/account"
+                      onClick={() => setIsMobileNavOpen(false)}
+                      className="rounded-lg border border-[var(--brd)] bg-white px-3 py-2 text-sm text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                    >
+                      My Account
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsMobileNavOpen(false)}
+                      className="rounded-lg border border-[var(--brd)] bg-white px-3 py-2 text-sm text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="rounded-lg border border-[#f4c7c3] bg-[#fff1ef] px-3 py-2 text-left text-sm text-[#b42318]"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </nav>
 
         <div className="flex flex-wrap items-center gap-3 border-b border-[var(--brd)] bg-[var(--grn-xlight)] px-5 py-3 text-sm md:px-12">
@@ -240,7 +456,6 @@ function Home() {
             </div>
           </div>
         </div>
-
         <section className="grid border-b border-[var(--brd)] lg:grid-cols-2">
           <div className="relative overflow-hidden border-b border-[var(--brd)] bg-white px-6 py-10 lg:border-b-0 lg:border-r lg:px-12 lg:py-14">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_90%,rgba(45,122,31,0.05)_0%,transparent_60%)]" />
@@ -248,7 +463,7 @@ function Home() {
               <div className="inline-flex rounded border border-[var(--brd-dark)] bg-[var(--grn-xlight)] px-3 py-1 text-[11px] uppercase tracking-[0.08em] text-[var(--grn-acc)]">
                 Policy - Analysis
               </div>
-              <h1 className="mt-6 font-['Instrument_Serif'] text-[34px] leading-[1.08] text-[var(--blk)] md:text-[50px]">
+              <h1 className="mt-6  text-[10px] leading-[1.12] text-[var(--blk)] sm:text-[4px] md:text-[35px]">
                 India&apos;s <em className="text-[var(--grn)]">FAME III</em> subsidy scheme could reshape the EV market - here&apos;s what we know
               </h1>
               <p className="mt-8 max-w-2xl text-sm leading-7 text-[var(--txt2)]">
@@ -271,10 +486,10 @@ function Home() {
           </div>
           <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden bg-[var(--grn-xlight)]">
             <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_39px,rgba(45,122,31,0.06)_40px),linear-gradient(to_bottom,transparent_39px,rgba(45,122,31,0.06)_40px)] bg-[size:40px_40px]" />
-            <div className="relative z-10 font-['Bebas_Neue'] text-[160px] tracking-[-0.05em] text-transparent [-webkit-text-stroke:2px_rgba(45,122,31,0.25)]">
+            <div className="relative z-10 font-['Bebas_Neue'] text-[96px] tracking-[-0.05em] text-transparent [-webkit-text-stroke:2px_rgba(45,122,31,0.25)] sm:text-[120px] md:text-[160px]">
               EV
             </div>
-            <div className="absolute bottom-6 right-6 rounded bg-[var(--grn)] px-4 py-2 text-[11px] uppercase tracking-[0.05em] text-white">
+            <div className="absolute bottom-4 right-4 rounded bg-[var(--grn)] px-4 py-2 text-[11px] uppercase tracking-[0.05em] text-white sm:bottom-6 sm:right-6">
               Cover Story
             </div>
           </div>
@@ -282,7 +497,7 @@ function Home() {
 
         <section className="grid border-b border-[var(--brd)] lg:grid-cols-[2fr_1fr_1fr]">
           {heroCards.map((item) => (
-            <a key={item.title} href="#" className="border-r border-[var(--brd)] px-6 py-8 transition hover:bg-[var(--grn-xlight)] last:border-r-0 md:px-9">
+            <a key={item.title} href="#" className="border-b border-[var(--brd)] px-6 py-8 transition hover:bg-[var(--grn-xlight)] last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 md:px-9">
               <div className="text-[10px] uppercase tracking-[0.08em] text-[var(--grn)]">{item.tag}</div>
               <h2 className={`mt-3 font-['Instrument_Serif'] text-[var(--blk)] ${item.large ? "text-[28px] leading-[1.2]" : "text-[20px] leading-[1.3]"}`}>
                 {item.title}
@@ -308,8 +523,8 @@ function Home() {
         </div>
 
         <div className="grid xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="border-r border-[var(--brd)]">
-            <div className="flex items-center justify-between border-b border-[var(--brd)] px-6 py-5 md:px-12">
+          <section className="border-b border-[var(--brd)] xl:border-b-0 xl:border-r">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--brd)] px-6 py-5 md:px-12">
               <span className="text-[10px] uppercase tracking-[0.1em] text-[var(--txt2)]">Latest stories</span>
               <select className="rounded border border-[var(--brd)] bg-transparent px-3 py-1 text-[11px] text-[var(--txt2)]">
                 <option>Most Recent</option>
@@ -329,7 +544,7 @@ function Home() {
                   <p className="mt-3 text-sm leading-6 text-[var(--txt2)]">{story.excerpt}</p>
                   <div className="mt-4 text-xs text-[var(--txt3)]">{story.meta}</div>
                 </div>
-                <div className="flex h-[90px] w-[120px] items-center justify-center rounded border border-[var(--brd)] bg-[var(--grn-xlight)] font-['Bebas_Neue'] text-4xl text-[var(--grn-dark)]">
+                <div className="flex h-[80px] w-[96px] items-center justify-center rounded border border-[var(--brd)] bg-[var(--grn-xlight)] font-['Bebas_Neue'] text-4xl text-[var(--grn-dark)] sm:h-[90px] sm:w-[120px]">
                   {story.icon}
                 </div>
               </a>
@@ -398,6 +613,25 @@ function Home() {
 
             <div className="border-b border-[var(--brd)] px-5 py-6">
               <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] uppercase tracking-[0.12em] text-[var(--txt2)]">
+                State Desk
+              </h3>
+              <div className="space-y-3 pt-4">
+                {stateNews.map((item) => (
+                  <Link
+                    key={item.state}
+                    href={`/state-news/${item.slug}`}
+                    className="block rounded-2xl border border-[var(--brd)] bg-white p-4 transition hover:-translate-y-0.5 hover:border-[var(--brd-dark)] hover:bg-[var(--grn-xlight)] hover:shadow-[0_14px_28px_rgba(39,80,10,0.08)]"
+                  >
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--grn)]">State News</div>
+                    <div className="mt-2 font-['Instrument_Serif'] text-[22px] leading-[1.2] text-[var(--blk)]">{item.state}</div>
+                    <div className="mt-2 text-xs text-[var(--txt3)]">{item.update}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-b border-[var(--brd)] px-5 py-6">
+              <h3 className="border-b border-[var(--brd)] pb-3 text-[10px] uppercase tracking-[0.12em] text-[var(--txt2)]">
                 Editor&apos;s picks
               </h3>
               <div className="space-y-3 pt-4">
@@ -419,7 +653,7 @@ function Home() {
           </aside>
         </div>
 
-        <section ref={widgetRef} className="border-b border-[var(--brd)]">
+        <section className="border-b border-[var(--brd)]">
           <div className="flex items-center gap-3 border-b border-[var(--brd)] px-5 py-5 md:px-12">
             <h2 className="font-['Bebas_Neue'] text-[24px] tracking-[0.04em] text-[var(--blk)]">EV Sales Tracker</h2>
             <span className="rounded border border-[var(--brd)] bg-[var(--grn-xlight)] px-3 py-1 text-xs text-[var(--grn-acc)]">
@@ -428,99 +662,183 @@ function Home() {
           </div>
           <div className="grid border-b border-[var(--brd)] sm:grid-cols-2 lg:grid-cols-5">
             {sales.map((item) => (
-              <div key={item.brand} className="border-r border-[var(--brd)] px-7 py-5 last:border-r-0">
+              <div key={item.brand} className="border-b border-[var(--brd)] px-7 py-5 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0">
                 <p className="text-xs uppercase tracking-[0.05em] text-[var(--txt2)]">{item.brand}</p>
                 <p className="mt-2 font-['Bebas_Neue'] text-[34px] leading-none text-[var(--blk)]">{item.value}</p>
                 <p className={`mt-1 text-xs ${item.up ? "text-[var(--grn)]" : "text-[#c0392b]"}`}>{item.change}</p>
               </div>
             ))}
           </div>
-          <div className="space-y-4 px-5 py-5 md:px-12">
-            {sales.map((item, index) => (
-              <div key={item.brand} className="flex items-center gap-4 text-sm">
-                <span className="w-24 shrink-0 text-[var(--txt2)]">{item.brand}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded bg-[var(--gry2)]">
-                  <div
-                    className="h-full rounded bg-[var(--grn)] transition-all duration-1000 ease-out"
-                    style={{ width: animateBars ? `${item.width}%` : "0%", transitionDelay: `${index * 100}ms` }}
-                  />
-                </div>
-                <span className="w-14 shrink-0 text-right font-medium text-[var(--txt)]">{item.share}</span>
-              </div>
-            ))}
-          </div>
         </section>
-        <footer className="bg-[var(--blk)] text-white">
-          <div className="grid gap-10 px-6 py-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1fr] lg:px-12">
-            <div>
-              <Link href="/" className="font-['Bebas_Neue'] text-[34px] tracking-[0.06em]">
-                EV<span className="text-[var(--grn-mid)]">TIMES</span>
-              </Link>
-              <p className="mt-4 max-w-xs text-sm leading-7 text-white/60">
-                India&apos;s independent source for EV news, sharp analysis, and market tracking across vehicles, policy, batteries, and charging.
-              </p>
-              <div className="mt-5 flex gap-3">
-                {["X", "in", "yt"].map((item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-sm text-white/70 transition hover:border-[var(--grn-mid)] hover:text-[var(--grn-mid)]"
-                  >
-                    {item}
-                  </a>
+        <footer className="border-t border-[var(--brd)] bg-[linear-gradient(180deg,var(--grn-xlight)_0%,#f7fbf1_55%,#f0f7e7_100%)] text-[var(--txt)]">
+          <div className="mx-auto max-w-[1500px] px-4 py-8 md:px-8 lg:px-12">
+            <section className="border-b border-[var(--brd)] pb-6">
+              <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Latest Stories</h3>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {footerLatestStories.map((column, columnIndex) => (
+                  <div key={`latest-${columnIndex}`} className="space-y-2">
+                    {column.map((item) => (
+                      <a
+                        key={item}
+                        href="#"
+                        className="group flex items-start text-[13px] leading-6 text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                      >
+                        <span className="mr-2 text-[var(--grn-mid)] transition group-hover:text-[var(--grn)]">*</span>
+                        <span>{item}</span>
+                      </a>
+                    ))}
+                  </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {footerColumns.map((column) => (
-              <div key={column.title}>
-                <h3 className="text-[11px] uppercase tracking-[0.12em] text-[var(--grn-light)]">
-                  {column.title}
-                </h3>
-                <div className="mt-4 space-y-3">
-                  {column.links.map((link) => (
+            <section className="border-b border-[var(--brd)] py-6">
+              <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Trending News</h3>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {footerTrendingNews.map((column, columnIndex) => (
+                  <div key={`trending-${columnIndex}`} className="space-y-1.5">
+                    {column.map((item) => (
+                      <a
+                        key={item}
+                        href="#"
+                        className="group flex items-start text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                      >
+                        <span className="mr-2 text-[var(--grn-mid)] transition group-hover:text-[var(--grn)]">*</span>
+                        <span>{item}</span>
+                      </a>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="grid gap-8 border-b border-[var(--brd)] py-7 lg:grid-cols-[1.1fr_1.5fr_0.8fr]">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Follow Us</h3>
+                  <div className="mt-3 flex gap-2.5">
+                    {footerSocialHandles.map((item) => (
+                      <a
+                        key={item}
+                        href="#"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brd-dark)] bg-white text-[12px] font-semibold uppercase text-[var(--grn-dark)] transition hover:border-[var(--grn)] hover:bg-[var(--grn)] hover:text-white"
+                      >
+                        {item}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Download Apps</h3>
+                  <div className="mt-3 flex gap-3">
                     <a
-                      key={link}
                       href="#"
-                      className="block text-sm text-white/65 transition hover:text-[var(--grn-mid)]"
+                      className="rounded border border-[var(--brd-dark)] bg-white px-3 py-2 text-sm font-medium text-[var(--grn-dark)] transition hover:border-[var(--grn)] hover:bg-[var(--grn)] hover:text-white"
                     >
-                      {link}
+                      Android
                     </a>
+                    <a
+                      href="#"
+                      className="rounded border border-[var(--brd-dark)] bg-white px-3 py-2 text-sm font-medium text-[var(--grn-dark)] transition hover:border-[var(--grn)] hover:bg-[var(--grn)] hover:text-white"
+                    >
+                      iOS
+                    </a>
+                  </div>
+                </div>
+
+                <div className="rounded border border-[var(--brd)] bg-[var(--gry)] p-3">
+                  <p className="text-[12px] uppercase tracking-[0.08em] text-[var(--grn)]">Trust Badge</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--txt2)]">
+                    EVTimes follows newsroom verification standards and publishes source-backed EV reporting.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Express Group</h3>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {footerExpressGroup.map((column, columnIndex) => (
+                    <div key={`group-${columnIndex}`} className="space-y-2">
+                      {column.map((item) => (
+                        <a
+                          key={item}
+                          href="#"
+                          className="block text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                        >
+                          {item}
+                        </a>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
-            ))}
 
-            <div>
-              <h3 className="text-[11px] uppercase tracking-[0.12em] text-[var(--grn-light)]">
-                States
-              </h3>
-              <div className="mt-4 space-y-3">
-                {stateLinks.map((state) => (
-                  <Link
-                    key={state.label}
-                    href={state.href}
-                    className="block text-sm text-white/65 transition hover:text-[var(--grn-mid)]"
-                  >
-                    {state.label}
-                  </Link>
-                ))}
+              <div>
+                <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Quick Links</h3>
+                <div className="mt-4 space-y-2">
+                  {footerQuickLinks.map((item) => (
+                    item.href.startsWith("/") ? (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="block text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        className="block text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                      >
+                        {item.label}
+                      </a>
+                    )
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
+            </section>
 
-          <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-4 text-xs text-white/45 md:flex-row md:items-center md:justify-between lg:px-12">
-            <p>&copy; 2026 EVTimes. All rights reserved.</p>
-            <div className="flex gap-5">
-              <a href="#" className="transition hover:text-[var(--grn-mid)]">
-                Privacy
-              </a>
-              <a href="#" className="transition hover:text-[var(--grn-mid)]">
-                Terms
-              </a>
-              <a href="#" className="transition hover:text-[var(--grn-mid)]">
-                Sitemap
-              </a>
+            <section className="border-b border-[var(--brd)] py-6">
+              <h3 className="text-[14px] font-semibold uppercase tracking-[0.1em] text-[var(--grn-dark)]">Top Categories</h3>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {footerTopCategories.map((column, columnIndex) => (
+                  <div key={`category-${columnIndex}`} className="space-y-1.5">
+                    {column.map((item) => (
+                      <a
+                        key={item}
+                        href="#"
+                        className="group flex items-start text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                      >
+                        <span className="mr-2 text-[var(--grn-mid)] transition group-hover:text-[var(--grn)]">*</span>
+                        <span>{item}</span>
+                      </a>
+                    ))}
+                  </div>
+                ))}
+
+                <div className="space-y-1.5">
+                  <p className="pb-1 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--grn)]">
+                    States
+                  </p>
+                  {footerStateLinks.map((state) => (
+                    <Link
+                      key={state.label}
+                      href={state.href}
+                      className="group flex items-start text-[14px] text-[var(--txt2)] transition hover:text-[var(--grn-dark)]"
+                    >
+                      <span className="mr-2 text-[var(--grn-mid)] transition group-hover:text-[var(--grn)]">*</span>
+                      <span>{state.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <div className="flex flex-col gap-2 pt-4 text-[12px] text-[var(--txt3)] md:flex-row md:items-center md:justify-between">
+              <p>Copyright &copy; 2026 The EVTimes Group. All rights reserved.</p>
+              <p className="uppercase tracking-[0.08em] text-[var(--txt2)]">Powered by EVTimes Stack</p>
             </div>
           </div>
         </footer>
