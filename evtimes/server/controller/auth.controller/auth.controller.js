@@ -3,6 +3,7 @@ import {
   findUserByEmail,
   findUserWithPassword,
   updateLastLogin,
+  getAllUsers,
 } from "@/server/repository/UserRepository/user.repository";
 
 import { hashPassword, comparePassword } from "@/server/utils/hash";
@@ -42,6 +43,18 @@ export const registerUser = async (data) => {
     user,
   };
 };
+
+
+export const fetchAllUsers = async () => {
+  const users = await getAllUsers();
+
+  return {
+    message: "Users fetched successfully",
+    count: users.length,
+    users,
+  };
+};
+
 
 export const loginUser = async (data) => {
   const { email, password } = data;

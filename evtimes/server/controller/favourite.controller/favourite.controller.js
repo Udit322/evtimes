@@ -25,7 +25,7 @@ const removeFavourite = async (body) => {
 const removeFavouriteById = async (id) => {
     try { 
 
-        await deleteFavouriteById({ _id: id });
+        await deleteFavouriteById(id);
         // return NextResponse.json({ message: "Favourite removed" }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });

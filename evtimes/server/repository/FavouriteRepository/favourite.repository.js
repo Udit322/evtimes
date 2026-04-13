@@ -11,16 +11,24 @@ const createFavourite = async (userId, newsId) => {
 const deleteFavourite = async (userId, newsId) => {
     
   //return await Favourite.deletebyId(id);
- return await favourite.deleteOne({ userId, newsId });
+ return await Favourite.deleteOne({ userId, newsId });
 };
+
+
+const deleteFavouriteById = async (id) => {
+    
+  //return await Favourite.deletebyId(id);
+ return await Favourite.deleteOne({ _id: id });
+};
+
 
 const getFavouritesByUserId = async (userId) => {
   
-//    return await Favourite.find({
-//     userId 
-//   }).populate("newsId");
+   return await Favourite.find({
+    userId 
+  }).populate("newsId");
 
-//return await Favourite.find({});
+return await Favourite.find({});
 
 if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error("Invalid userId");
@@ -33,4 +41,4 @@ if (!mongoose.Types.ObjectId.isValid(userId)) {
 
 };
 
-export { createFavourite, deleteFavourite, getFavouritesByUserId };
+export { createFavourite, deleteFavourite, getFavouritesByUserId, deleteFavouriteById };
