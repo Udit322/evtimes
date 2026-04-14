@@ -1,14 +1,18 @@
 export async function getNews() {
-    try {
-        const res = await fetch(
-            "https://newsapi.org/v2/everything?q=tesla&sortBy=publishedAt&apiKey=88b730d907f14b1cad1eb4f6f1f38d56"
-        );
+  try {
+    const res = await fetch("http://localhost:3000/api/news");
 
-        const data = await res.json();
-
-        return data.articles; // important
-    } catch (error) {
-        console.log(error);
-        return [];
+    if (!res.ok) {
+      throw new Error("Failed to fetch");
     }
+
+    const data = await res.json();
+
+    console.log("NEWS:", data);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 }

@@ -275,7 +275,7 @@ export default function Sidebar({
 
                         <span className="dashboard-sidebar-link-copy">
                           <strong>{item.label}</strong>
-                          <small>{item.hint}</small>
+                          {/* <small>{item.hint}</small> */}
                         </span>
                       </Link>
                     );

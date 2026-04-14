@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getStoredUser, saveSessionUser } from "../lib/mockAuth";
 
 function Login() {
   const router = useRouter();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,12 +22,8 @@ function Login() {
       [event.target.name]: event.target.value,
     }));
 
-    if (error) {
-      setError("");
-    }
-    if (success) {
-      setSuccess("");
-    }
+    if (error) setError("");
+    if (success) setSuccess("");
   };
 
   const handleSubmit = async (event) => {
@@ -38,102 +35,89 @@ function Login() {
     }
 
     const trimmedEmail = form.email.trim().toLowerCase();
-    const storedUser = getStoredUser();
 
-    if (!storedUser) {
-      setError("No account found. Please sign up first.");
-      return;
-    }
+    try {
+      setIsSubmitting(true);
 
-    if (storedUser.email !== trimmedEmail || storedUser.password !== form.password) {
-      setError("Invalid email or password.");
-      return;
-    }
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password: form.password,
+        }),
+      });
 
-    saveSessionUser({
-      name: storedUser.name,
-      email: storedUser.email,
-    });
+      const data = await res.json();
 
-    setIsSubmitting(true);
-    setSuccess(`Welcome back, ${storedUser.name}. Account saved. Redirecting...`);
+      if (!res.ok) {
+        setError(data.error || "Login failed");
+        return;
+      }
 
-    window.setTimeout(() => {
+      // ✅ TOKEN SAVE
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setSuccess(`Welcome back, ${data.user.name} ✅`);
+
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+
+    } catch (error) {
+      setError("Server error");
+    } finally {
       setIsSubmitting(false);
-      router.push("/");
-    }, 700);
+    }
   };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,var(--grn-xlight)_0%,var(--wh)_100%)] px-4 py-6 sm:py-8">
       <div className="w-full max-w-md rounded-[24px] border border-[var(--brd)] bg-white p-5 shadow-[0_24px_60px_rgba(39,80,10,0.12)] sm:rounded-[28px] sm:p-8">
-        <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-[var(--grn)]">
-          Member Access
-        </p>
-        <h2 className="mt-3 text-center text-2xl font-semibold text-[var(--blk)] sm:text-3xl">
-          Login
-        </h2>
-        <p className="mt-3 text-center text-sm text-[var(--txt2)]">
-          Login with the account you created on signup.
-        </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="login-email" className="text-sm font-medium text-[var(--txt)]">
-              Email
-            </label>
-            <input
-              id="login-email"
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
-            />
-          </div>
+        <h2 className="text-center text-2xl font-semibold">Login</h2>
 
-          <div className="space-y-1.5">
-            <label htmlFor="login-password" className="text-sm font-medium text-[var(--txt)]">
-              Password
-            </label>
-            <input
-              id="login-password"
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-[var(--brd)] bg-[var(--gry)] px-4 py-3 text-sm outline-none transition focus:border-[var(--grn)] focus:bg-white"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
 
-          {error ? (
-            <p className="text-sm text-red-600">{error}</p>
-          ) : null}
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
 
-          {success ? (
-            <p className="text-sm text-[var(--grn-dark)]">{success}</p>
-          ) : null}
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
+
+          {error && <p className="text-red-600">{error}</p>}
+          {success && <p className="text-green-600">{success}</p>}
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-[var(--grn)] py-3 text-sm font-medium text-white transition hover:bg-[var(--grn-acc)] disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full bg-green-600 text-white py-2 rounded"
           >
-            {isSubmitting ? "Signing In..." : "Login"}
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-[var(--txt2)]">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-[var(--grn)] hover:text-[var(--grn-acc)]"
-          >
+        <p className="mt-4 text-center">
+          Don't have an account?{" "}
+          <Link href="/signup" className="text-green-600">
             Signup
           </Link>
         </p>
+
       </div>
     </div>
   );
