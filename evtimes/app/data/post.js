@@ -5,9 +5,7 @@ export async function getPosts() {
         if (!res.ok) {
             throw new Error("Failed to fetch posts");
         }
-
         const data = await res.json();
-
         return data.posts ?? [];
     } catch (error) {
         console.log(error);

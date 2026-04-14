@@ -25,10 +25,10 @@ export const registerUser = async (data) => {
     throw new Error("Weak password");
   }
 
-  const existingUser = await findUserByEmail(email);
-  if (existingUser) {
-    throw new Error("User already exists");
-  }
+  // const existingUser = await findUserByEmail(email);
+  // if (existingUser) {
+  //   throw new Error("User already exists");
+  // }
 
   const hashedPassword = await hashPassword(password);
 
