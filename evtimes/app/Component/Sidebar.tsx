@@ -9,26 +9,22 @@ import { clearSessionUser } from "@/app/lib/mockAuth";
 type IconProps = {
   className?: string;
 };
-
 type NavItem = {
   href: string;
   label: string;
   // hint: string;
   icon: (props: IconProps) => ReactElement;
 };
-
 type NavSection = {
   label: string;
   items: NavItem[];
 };
-
 type SidebarProps = {
   isCollapsed: boolean;
   isMobile: boolean;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
 };
-
 function DashboardIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -43,7 +39,6 @@ function DashboardIcon({ className }: IconProps) {
     </svg>
   );
 }
-
 function UsersIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -58,7 +53,6 @@ function UsersIcon({ className }: IconProps) {
     </svg>
   );
 }
-
 function CommentsIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -88,7 +82,6 @@ function PostsIcon({ className }: IconProps) {
     </svg>
   );
 }
-
 function NewsIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -134,10 +127,10 @@ const navSections: NavSection[] = [
     label: "Workspace",
     items: [
       {
-        href: "/dashboard/users",
-        label: "Users",
-        // hint: "Team access and roles",
-        icon: UsersIcon,
+        href: "/dashboard/news",
+        label: "News",
+        // hint: "Live feed and stories",
+        icon: NewsIcon,
       },
       {
         href: "/dashboard/comments",
@@ -152,10 +145,10 @@ const navSections: NavSection[] = [
         icon: PostsIcon,
       },
       {
-        href: "/dashboard/news",
-        label: "News",
-        // hint: "Live feed and stories",
-        icon: NewsIcon,
+        href: "/dashboard/users",
+        label: "Users",
+        // hint: "Team access and roles",
+        icon: UsersIcon,
       },
     ],
   },

@@ -9,7 +9,7 @@ export default function CityNewsPage() {
           EV<span className="text-[var(--grn)]">TIMES</span>
         </Link>
         <Link
-          href="/signup?mode=login"
+          href="/login"
           className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
         >
           Login

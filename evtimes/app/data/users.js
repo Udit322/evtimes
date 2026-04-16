@@ -1,14 +1,20 @@
 export async function getUsers() {
-    const res = await fetch("https://localhost:3000/api/auth/loginn");
+  const token = localStorage.getItem("token");
 
-    if (!res.ok) {
-        throw new Error("Failed to fetch users");
-    }
+  const res = await fetch("http://localhost:3000/api/admin/fetchUsers", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    return (data.users ?? []).map((u, index) => ({
-        ...u,
-        role: index === 0 ? "super_admin" : "admin",
-    }));
+  console.log("API DATA 👉", data);
+
+  if (!res.ok) {
+    throw new Error("Failed ❌");
+  }
+
+  return data.users || [];
 }

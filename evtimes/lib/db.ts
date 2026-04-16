@@ -13,8 +13,8 @@ export async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      dbName: "ev_news", // change this
+    cached.promise = await mongoose.connect(MONGODB_URI, {
+      dbName: "Evtimes", // change this
       bufferCommands: false,
     });
   }

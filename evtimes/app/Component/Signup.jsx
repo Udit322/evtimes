@@ -63,34 +63,58 @@ function Signup() {
 
     const existingUser = getStoredUser();
 
-    if (authMode === "login") {
-      if (!existingUser || existingUser.email !== trimmedEmail) {
-        setError("No account found with this email. Please sign up first.");
+    if (authMode === "signup") {
+      if (!trimmedName || !form.confirmPassword.trim()) {
+        setError("Please fill in all signup fields.");
         return;
       }
 
-      if (existingUser.password !== form.password) {
-        setError("Invalid password. Please try again.");
+      if (form.password !== form.confirmPassword) {
+        setError("Passwords do not match.");
         return;
       }
 
       setIsSubmitting(true);
 
-      saveSessionUser({
-        name: existingUser.name,
-        email: existingUser.email,
-      });
+      try {
+        const res = await fetch("/api/auth/registerr", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: trimmedName,
+            email: trimmedEmail,
+            password: trimmedPassword,
+          }),
+        });
 
-      setSuccess("Welcome back. Your account is saved. Redirecting...");
+        const data = await res.json();
 
-      window.setTimeout(() => {
+        if (!res.ok) {
+          throw new Error(data.message || "Something went wrong");
+        }
+
+        // ✅ save session (optional)
+        saveSessionUser({
+          name: data.user.name,
+          email: data.user.email,
+        });
+
+        setSuccess("Account created successfully 🚀");
+
+        setTimeout(() => {
+          router.push("/");
+        }, 900);
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
         setIsSubmitting(false);
-        router.push("/");
-      }, 900);
+      }
 
       return;
     }
-
     if (!trimmedName || !form.confirmPassword.trim()) {
       setError("Please fill in all signup fields.");
       return;

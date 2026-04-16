@@ -88,6 +88,8 @@ export function clearSessionUser() {
   cachedSessionRaw = null;
   cachedSessionUser = null;
   window.localStorage.removeItem(SESSION_KEY);
+  window.localStorage.removeItem("token");
+  window.localStorage.removeItem("user");
   window.dispatchEvent(new Event(SESSION_EVENT));
 }
 
