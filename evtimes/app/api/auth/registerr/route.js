@@ -9,7 +9,7 @@ export async function POST(req) {
     const body = await req.json();
 
     const result = await registerUser(body);
-
+    
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json(

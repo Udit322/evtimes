@@ -4,6 +4,7 @@ import {
   getNewsBySlug,
   incrementViews,
   updateNews,
+  changeNewsStatus,
 } from "@/server/repository/NewsRepository/news.repository";
 import slugify from "slugify";
 import News from "@/server/model/NewsModel/news.model";
@@ -38,12 +39,31 @@ const slug = await generateUniqueSlug(title);
   });
 };
 
+export const changeNewsStatusHandler = async (newsId, status, user) => {
+  const existingNews = await News.findById(newsId);
 
+  if (!existingNews) {
+    throw new Error("News not found");
+  }
+   
+  //  AUTH CHECK
+  if (
+    existingNews.author.toString() !== user.userId &&
+    user.role !== "super_admin"
+  ) {
+    throw new Error("Not authorized to change status of this news");
+  }       
 
+  return await changeNewsStatus(existingNews._id, status);
 
+};
 
 export const getAllNewsHandler = async () => {
   return await getAllNews({ status: "published" });
+};
+
+export const getAllPostsHandler = async () => {
+  return await getAllNews({ status: "draft" });
 };
 
 export const getSingleNewsHandler = async (slug) => {
@@ -66,7 +86,7 @@ export const updateNewsHandler = async (newsId, data, user) => {
   //  AUTH CHECK
   if (
     existingNews.author.toString() !== user.userId &&
-    user.role !== "admin"
+    user.role !== "super_admin"
   ) {
     throw new Error("Not authorized to update this news");
   }

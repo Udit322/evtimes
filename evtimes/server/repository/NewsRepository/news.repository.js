@@ -61,3 +61,14 @@ export const toggleLike = async (newsId, userId) => {
 };
 
 
+export const changeNewsStatus = async (newsId, status, user) => {
+  const existingNews = await News.findById(newsId);
+
+  if (!existingNews) {
+    throw new Error("News not found");
+  }
+
+  existingNews.status = status;
+  return await existingNews.save();
+};
+

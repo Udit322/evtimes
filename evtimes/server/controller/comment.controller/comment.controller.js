@@ -4,6 +4,8 @@ import {
   deleteComment,
   updateComment,
   toggleLike,
+  getCommentById,
+  getAllComments
 } from "@/server/repository/CommentsRepository/comment.repository";
 
 // CREATE COMMENT
@@ -28,6 +30,13 @@ export const fetchComments = async (newsId) => {
 
   return await getCommentsByNews(newsId);
 };
+
+
+//Fetch All Comments from db
+export const fetchAllComments = async () => {
+  return await getAllComments();
+}
+
 
 // DELETE
 export const removeComment = async (commentId, userId) => {

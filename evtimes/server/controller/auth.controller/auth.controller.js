@@ -2,8 +2,14 @@ import {
   createUser,
   findUserByEmail,
   findUserWithPassword,
+  findUserById,
+  findUserByName,
   updateLastLogin,
   getAllUsers,
+  updateById,
+  updatestatusById,
+  updateRoleById,
+ 
 } from "@/server/repository/UserRepository/user.repository";
 
 import { hashPassword, comparePassword } from "@/server/utils/hash";
@@ -45,6 +51,24 @@ export const registerUser = async (data) => {
 };
 
 
+export const updateProfileImage = async (userId, imageUrl) => {
+  return await updateById(userId, {
+    profileImage: imageUrl,
+  });
+};
+
+//Update user status (active/blocked) 
+
+export const updateUserStatus = async (userId, status) => {
+  if (!["active", "blocked"].includes(status)) {
+    throw new Error("Invalid status value");
+  }
+
+  return await updatestatusById(userId, {
+    status,
+  });
+};
+
 export const fetchAllUsers = async () => {
   const users = await getAllUsers();
 
@@ -83,8 +107,65 @@ export const loginUser = async (data) => {
 
   const token = generateToken(user._id.toString(), user.role);
 
+  const { password: _, ...safeUser } = user;
+
+// return {
+//   message: "Login successful",
+//   token,
+//   user: safeUser,
+// };
+
   return {
     message: "Login successful",
     token,
+    //user
   };
 };
+
+export const updateUserRole = async (userId, role) => {
+
+  if (!["user","staff","admin"].includes(role)) {
+    throw new Error("Invalid role value");  
+
+  } 
+  return await updateRoleById(userId, {
+    role,
+  });
+}
+
+export const findUserByEmailHandler = async (email) => {
+  if (!email) {
+    throw new Error("Email is required");
+  } 
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    throw new Error("User not found");
+  } 
+  return user;
+}
+
+
+export const findUserByNameHandler = async (name) => {
+  if (!name) {
+    throw new Error("Name is required");
+  } 
+  const user = await findUserByName(name);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+}
+
+export const findUserByIdHandler = async (userId) => {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+}
