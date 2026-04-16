@@ -19,8 +19,8 @@
 //   }
 // };
 
- import { NextResponse } from "next/server";
- import jwt from "jsonwebtoken";
+//  import { NextResponse } from "next/server";
+//  import jwt from "jsonwebtoken";
 
 // const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -51,11 +51,40 @@
 //   }
 // };
 
+// export const authMiddleware = async (req, context, next) => {
+//   try {
+//     const header = req.headers.get("authorization");
+
+//     if (!header || !header.startsWith("Bearer ")) {
+//       return NextResponse.json(
+//         { message: "Unauthorized" },
+//         { status: 401 }
+//       );
+//     }
+
+//     const token = header.split(" ")[1];
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     context.user = decoded; // persists now ✅
+
+//     return next();
+//   } catch (error) {
+//     return NextResponse.json(
+//       { message: "Invalid token" },
+//       { status: 401 }
+//     );
+//   }
+// };
+
+import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
 export const authMiddleware = async (req, context, next) => {
   try {
-    const header = req.headers.get("authorization");
+    const token = req.cookies.get("token")?.value;
 
-    if (!header || !header.startsWith("Bearer ")) {
+    if (!token) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -66,7 +95,7 @@ export const authMiddleware = async (req, context, next) => {
 const JWT_SECRET = "123456cdc"
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    context.user = decoded; // persists now ✅
+    context.user = decoded;
 
     return next();
   } catch (error) {

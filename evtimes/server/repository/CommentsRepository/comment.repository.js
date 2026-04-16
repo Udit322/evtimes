@@ -46,3 +46,7 @@ export const toggleLike = async (commentId, userId) => {
   await comment.save();
   return comment;
 };
+
+export const getAllComments = async () => {
+  return await Comment.find().populate("user", "username").sort({ createdAt: -1 });
+}

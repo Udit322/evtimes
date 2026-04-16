@@ -2,8 +2,14 @@ import {
   createUser,
   findUserByEmail,
   findUserWithPassword,
+  findUserById,
+  findUserByName,
   updateLastLogin,
   getAllUsers,
+  updateById,
+  updatestatusById,
+  updateRoleById,
+ 
 } from "@/server/repository/UserRepository/user.repository";
 
 import { hashPassword, comparePassword } from "@/server/utils/hash";
@@ -46,6 +52,24 @@ export const registerUser = async (data) => {
 };
 
 
+export const updateProfileImage = async (userId, imageUrl) => {
+  return await updateById(userId, {
+    profileImage: imageUrl,
+  });
+};
+
+//Update user status (active/blocked) 
+
+export const updateUserStatus = async (userId, status) => {
+  if (!["active", "blocked"].includes(status)) {
+    throw new Error("Invalid status value");
+  }
+
+  return await updatestatusById(userId, {
+    status,
+  });
+};
+
 export const fetchAllUsers = async () => {
   const users = await getAllUsers();
 
@@ -84,6 +108,14 @@ export const loginUser = async (data) => {
   await updateLastLogin(user._id.toString());
 
   const token = generateToken(user._id.toString(), user.role);
+
+  const { password: _, ...safeUser } = user;
+
+// return {
+//   message: "Login successful",
+//   token,
+//   user: safeUser,
+// };
 
   return {
     message: "Login successful",
