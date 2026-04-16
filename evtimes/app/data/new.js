@@ -1,6 +1,6 @@
 export async function getNews() {
   try {
-    const res = await fetch("http://localhost:3000/api/news");
+    const res = await fetch("http://localhost:3000/api/news/createe");
 
     if (!res.ok) {
       throw new Error("Failed to fetch");

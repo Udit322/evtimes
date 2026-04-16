@@ -6,7 +6,11 @@ import { getNews } from "@/app/data/new";
 type NewsItem = {
   _id?: string;
   title?: string;
+  description?: string;
   content?: string;
+  category?: string;
+  tags?: string[];
+  image?: string;
   author?: string;
   createdAt?: string;
 };
