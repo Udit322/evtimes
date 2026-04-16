@@ -11,10 +11,12 @@ export async function POST(req) {
     const userId = "66f1a2c8e4b0c123456789ab";
 
     const news = await createNewsHandler(body, userId);
+
     return Response.json({
       message: "News created",
       news,
     });
+
   } catch (err) {
     return Response.json({ error: err.message }, { status: 400 });
   }
