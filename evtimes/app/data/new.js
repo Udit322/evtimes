@@ -5,11 +5,8 @@ export async function getNews() {
     if (!res.ok) {
       throw new Error("Failed to fetch");
     }
-
     const data = await res.json();
-
     console.log("NEWS:", data);
-
     return data;
   } catch (error) {
     console.log(error);

@@ -39,7 +39,7 @@ function Login() {
     try {
       setIsSubmitting(true);
 
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/loginn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,16 +57,22 @@ function Login() {
         return;
       }
 
-      // ✅ TOKEN SAVE
+      //  TOKEN SAVE
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      setSuccess(`Welcome back, ${data.user.name} ✅`);
+      setSuccess(`Welcome back, ${data.user.name} `);
 
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      const role = data.user.role;
+      localStorage.setItem("role", role);
 
+      if (role === "super_admin") {
+        router.replace("/dashboard");
+      } else if (role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/");
+      }
     } catch (error) {
       setError("Server error");
     } finally {

@@ -280,13 +280,13 @@ function Home() {
             <div className="hidden justify-self-end md:block">
               <div className="flex items-center gap-3">
                 <Link
-                  href="/signup?mode=login"
+                  href="/login"
                   className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/signup?mode=signup"
+                  href="/signup"
                   className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
                 >
                   Signup
@@ -369,14 +369,14 @@ function Home() {
 
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Link
-                  href="/signup?mode=login"
+                  href="/login"
                   onClick={() => setIsMobileNavOpen(false)}
                   className="flex-1 rounded border border-[var(--brd-dark)] px-4 py-2 text-center text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/signup?mode=signup"
+                  href="/signup"
                   onClick={() => setIsMobileNavOpen(false)}
                   className="flex-1 rounded bg-[var(--grn)] px-4 py-2 text-center text-xs text-white hover:bg-[var(--grn-acc)]"
                 >

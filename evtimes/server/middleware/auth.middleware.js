@@ -63,8 +63,8 @@ export const authMiddleware = async (req, context, next) => {
     }
 
     const token = header.split(" ")[1];
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+const JWT_SECRET = "123456cdc"
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     context.user = decoded; // persists now ✅
 

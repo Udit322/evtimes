@@ -1,6 +1,7 @@
 "use client";
 
-// type MetricTone = "positive" | "neutral" | "alert";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const summaryCards = [
   {
@@ -8,7 +9,6 @@ const summaryCards = [
     value: "128",
     note: "12 approvals cleared since morning review",
     delta: "+12.6%",
-    // tone: "positive" as MetricTone,
     icon: "story",
   },
   {
@@ -16,7 +16,6 @@ const summaryCards = [
     value: "48.2k",
     note: "Homepage traffic is holding above daily average",
     delta: "+8.4%",
-    // tone: "positive" as MetricTone,
     icon: "users",
   },
   {
@@ -24,14 +23,12 @@ const summaryCards = [
     value: "09",
     note: "Editorial checks lined up for the next publish slot",
     delta: "Queue",
-    // tone: "neutral" as MetricTone,
     icon: "review",
   },
   {
     title: "Comment Reports",
     value: "17",
     note: "Moderation flags dropped compared to yesterday",
-    // tone: "alert" as MetricTone,
     icon: "alert",
   },
 ];
@@ -113,68 +110,18 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-// function getToneClass(tone: MetricTone) {
-//   if (tone === "alert") {
-//     return "is-alert";
-//   }
-
-//   if (tone === "neutral") {
-//     return "is-neutral";
-//   }
-
-//   return "is-positive";
-// }
-
-function getMetricIcon(icon: string) {
-  switch (icon) {
-    case "users":
-      return (
-        <path
-          d="M8.5 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 1a2.5 2.5 0 1 0 0-5A2.5 2.5 0 0 0 15.5 13ZM4.5 18a4.5 4.5 0 0 1 9 0M13 18a3 3 0 0 1 6 0"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.7"
-        />
-      );
-    case "review":
-      return (
-        <path
-          d="M6 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3V7a2 2 0 0 1 2-2Zm3.5 5.25H16m-6.5 3H14"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.7"
-        />
-      );
-    case "alert":
-      return (
-        <path
-          d="M12 4.5 20 18H4L12 4.5Zm0 5.25v3.75m0 2.5h.01"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.7"
-        />
-      );
-    default:
-      return (
-        <path
-          d="M7 5.5h7l3 3V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 6 18V7A1.5 1.5 0 0 1 7.5 5.5Zm2 5h6m-6 3h6"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.7"
-        />
-      );
-  }
-}
 
 export default function Dashboard() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user || user.role !== "super_admin") {
+      router.push("/");
+    }
+  }, [router]);
+
   return (
     <div className="dashboard-home">
       <section className="cards">
@@ -185,17 +132,7 @@ export default function Dashboard() {
                 <h4>{card.title}</h4>
                 <p>{card.value}</p>
               </div>
-
-              {/* <span className={`dashboard-card-icon ${getToneClass(card.tone)}`}>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  {getMetricIcon(card.icon)}
-                </svg>
-              </span> */}
             </div>
-
-            {/* <span className={`dashboard-card-delta ${getToneClass(card.tone)}`}>
-              {card.delta}
-            </span> */}
             <small>{card.note}</small>
           </article>
         ))}
@@ -212,7 +149,6 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-
           <div className="dashboard-activity-list">
             {activityItems.map((item) => (
               <article key={item.title} className="dashboard-activity-item">

@@ -15,7 +15,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!sessionUser) {
-      router.replace("/signup?mode=login");
+      router.replace("/login");
     }
   }, [router, sessionUser]);
 
@@ -58,7 +58,7 @@ export default function SettingsPage() {
             type="button"
             onClick={() => {
               clearSessionUser();
-              router.push("/signup?mode=login");
+              router.push("/login");
             }}
             className="rounded-xl bg-[#b42318] px-4 py-2 text-sm text-white hover:bg-[#9c1f15]"
           >

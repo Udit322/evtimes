@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/Component/Sidebar";
 import Header from "@/app/Component/Header";
@@ -13,9 +14,21 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [hasToken] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : Boolean(window.localStorage.getItem("token"))
+  );
+
+  useEffect(() => {
+    if (!hasToken) {
+      router.replace("/login");
+    }
+  }, [hasToken, router]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
@@ -60,6 +73,14 @@ export default function DashboardLayout({
 
     setIsSidebarCollapsed((current) => !current);
   };
+
+  if (!hasToken) {
+    // return (
+    //   <div className="flex min-h-screen items-center justify-center bg-white">
+    //     <p className="text-sm text-[var(--txt2)]">Checking dashboard access...</p>
+    //   </div>
+    // );
+  }
 
   return (
     <div

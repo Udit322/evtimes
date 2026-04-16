@@ -8,7 +8,7 @@ import {
 
 // CREATE COMMENT
 export const addComment = async (data) => {
-  const { user, news, content, parentComment } = data;
+  const { user,news, content, parentComment } = data;
 
   if (!user || !news || !content) {
     throw new Error("Missing required fields");
