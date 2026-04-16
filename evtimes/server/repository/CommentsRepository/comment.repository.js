@@ -1,28 +1,25 @@
 import Comment from "@/server/model/CommentsModel/comment.model";
 import User from "@/server/model/UserModel/user.model";
 
+
 // CREATE
 export const createComment = async (data) => {
   return await Comment.create(data);
 };
-
 // GET COMMENTS BY NEWS (with nested support later)
 export const getCommentsByNews = async (newsId) => {
   return await Comment.find({ news: newsId })
     .populate("user", "username")
     .sort({ createdAt: -1 });
 };
-
 // GET SINGLE COMMENT
 export const getCommentById = async (id) => {
   return await Comment.findById(id);
 };
-
 // DELETE COMMENT
 export const deleteComment = async (id) => {
   return await Comment.findByIdAndDelete(id);
 };
-
 // UPDATE COMMENT
 export const updateComment = async (id, content) => {
   return await Comment.findByIdAndUpdate(
