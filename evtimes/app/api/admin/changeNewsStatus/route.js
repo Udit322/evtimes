@@ -4,6 +4,7 @@ import { adminMiddleware } from "@/server/middleware/admin.middleware";
 import { compose } from "@/server/middleware/compose";
 import { NextResponse } from "next/server";
 
+
     export const POST = compose(
     [authMiddleware, adminMiddleware],
     async (req, context) => {
@@ -12,4 +13,5 @@ import { NextResponse } from "next/server";
         await changeNewsStatusHandler(newsId, status, context.user);
         return NextResponse.json({ success: true });
     }
-    );
+);
+

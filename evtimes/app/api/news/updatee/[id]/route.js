@@ -14,7 +14,9 @@ export async function PUT(req, { params }) {
     }
     const body = await req.json();
 
-    const token = req.headers.get("authorization")?.split(" ")[1];
+    // const token = req.headers.get("authorization")?.split(" ")[1];
+     const token = req.cookies.get("token")?.value;
+    
     const decoded = verifyToken(token);
 
     const updatedNews = await updateNewsHandler(
