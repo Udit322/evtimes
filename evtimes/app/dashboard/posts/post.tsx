@@ -1,144 +1,151 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getPosts } from "@/app/data/post";
+import { useState } from "react";
 
-type PostItem = {
-    id: number;
-    title: string;
-    body: string;
-    tags?: string[];
-    views?: number;
-};
+export default function PostNews() {
+  const [showForm, setShowForm] = useState(false);
 
-function getReadingTime(text: string) {
-    const words = text.split(/\s+/).filter(Boolean).length;
+  const [form, setForm] = useState({
+    title: "", description: "", content: "",
+    category: "", tags: "", image: "",
+  });
 
-    return Math.max(1, Math.ceil(words / 180));
-}
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
 
-function PostsView() {
-    const [posts, setPosts] = useState<PostItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const handleChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    useEffect(() => {
-        let isMounted = true;
+  const handleSubmit = async () => {
+    if (!form.title.trim() || !form.content.trim()) {
+      setMsg({ text: "Title and content are required.", type: "error" });
+      return;
+    }
 
-        getPosts()
-            .then((data) => {
-                if (isMounted) {
-                    setPosts(data);
-                }
-            })
-            .catch(() => {
-                if (isMounted) {
-                    setError("Posts data load nahi ho paya.");
-                }
-            })
-            .finally(() => {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            });
+    try {
+      setLoading(true);
+      setMsg({ text: "", type: "" });
 
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+      const res = await fetch("/api/news/createe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        }),
+      });
 
-    const totalViews = posts.reduce((sum, item) => sum + (item.views ?? 0), 0);
-    const totalTags = new Set(posts.flatMap((item) => item.tags ?? [])).size;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-    return (
-        <div className="dashboard-page">
-            <section className="dashboard-subpage-hero">
-                {/* <div>
-                    <p className="section-tag">Content Studio</p>
-                    <h1>Posts management dashboard</h1>
-                    <p>
-                        Published content, reading depth, and tag distribution are now
-                        visible in one place for faster admin review.
-                    </p>
-                </div> */}
+      setMsg({ text: "✅ Article published!", type: "success" });
 
-                <div className="dashboard-summary-grid">
-                    <div className="dashboard-summary-card">
-                        <span>Total Posts</span>
-                        <strong>{posts.length}</strong>
-                    </div>
-                    <div className="dashboard-summary-card">
-                        <span>Total Views</span>
-                        <strong>{totalViews}</strong>
-                    </div>
-                    <div className="dashboard-summary-card">
-                        <span>Unique Tags</span>
-                        <strong>{totalTags}</strong>
-                    </div>
-                    <div className="dashboard-summary-card">
-                        <span>Publishing State</span>
-                        <strong>Active</strong>
-                    </div>
-                </div>
-            </section>
+      setForm({
+        title: "", description: "", content: "",
+        category: "", tags: "", image: "",
+      });
 
-            <section className="dashboard-panel">
-                <div className="dashboard-panel-head">
-                    <div>
-                        <p className="section-tag">Posts Table</p>
-                        <h2>Latest published articles</h2>
-                    </div>
-                    <span className="dashboard-chip">Live content feed</span>
-                </div>
+      setShowForm(false); // 🔥 CLOSE FORM AFTER SUCCESS
 
-                {loading ? (
-                    <div className="dashboard-empty-state">Loading posts...</div>
-                ) : error ? (
-                    <div className="dashboard-empty-state">{error}</div>
-                ) : (
-                    <div className="dashboard-table-shell">
-                        <table className="dashboard-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Preview</th>
-                                    <th>Tags</th>
-                                    <th>Insights</th>
-                                </tr>
-                            </thead>
+    } catch (err: any) {
+      setMsg({ text: err.message, type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                            <tbody>
-                                {posts.map((post) => (
-                                    <tr key={post.id}>
-                                        <td data-label="Title">
-                                            <strong className="dashboard-table-title">{post.title}</strong>
-                                        </td>
-                                        <td data-label="Preview">
-                                            <p className="dashboard-comment-copy">
-                                                {post.body.length > 90
-                                                    ? `${post.body.slice(0, 90)}...`
-                                                    : post.body}
-                                            </p>
-                                        </td>
-                                        <td data-label="Tags">
-                                            <span className="dashboard-table-value">
-                                                {(post.tags ?? []).join(", ") || "No tags"}
-                                            </span>
-                                        </td>
-                                        <td data-label="Insights">
-                                            <span className="dashboard-badge status-ready">
-                                                {getReadingTime(post.body)} min read
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </section>
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-semibold">News</h2>
+          <p className="text-sm text-gray-500">Manage your articles</p>
         </div>
-    );
-}
 
-export default PostsView;
+        {/* 🔥 ADD BUTTON */}
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow"
+        >
+          + Add News
+        </button>
+      </div>
+
+      {/* 🔥 MODAL FORM */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+
+          <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 space-y-5">
+
+            {/* TOP */}
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Create News</h3>
+              <button onClick={() => setShowForm(false)}>❌</button>
+            </div>
+
+            {/* FORM */}
+            <div className="space-y-4">
+
+              <input name="title" value={form.title} onChange={handleChange}
+                placeholder="Title"
+                className="w-full p-3 border rounded-lg" />
+
+              <input name="description" value={form.description} onChange={handleChange}
+                placeholder="Description"
+                className="w-full p-3 border rounded-lg" />
+
+              <textarea name="content" value={form.content} onChange={handleChange}
+                placeholder="Content"
+                className="w-full p-3 border rounded-lg h-28" />
+
+              <div className="grid grid-cols-2 gap-3">
+                <input name="category" value={form.category} onChange={handleChange}
+                  placeholder="Category"
+                  className="p-3 border rounded-lg" />
+
+                <input name="tags" value={form.tags} onChange={handleChange}
+                  placeholder="Tags"
+                  className="p-3 border rounded-lg" />
+              </div>
+
+              <input name="image" value={form.image} onChange={handleChange}
+                placeholder="Image URL"
+                className="w-full p-3 border rounded-lg" />
+
+            </div>
+
+            {/* MESSAGE */}
+            {msg.text && (
+              <p className={`text-sm ${msg.type === "success" ? "text-green-600" : "text-red-500"}`}>
+                {msg.text}
+              </p>
+            )}
+
+            {/* ACTION */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg"
+              >
+                {loading ? "Posting..." : "Publish"}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
