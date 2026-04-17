@@ -130,3 +130,14 @@ export const loginUser = async (data) => {
     },
   };
 };
+
+export const updateUserRole = async (userId, role) => {
+
+  if (!["user","staff","admin"].includes(role)) {
+    throw new Error("Invalid role value");  
+
+  } 
+  return await updateRoleById(userId, {
+    role,
+  });
+}

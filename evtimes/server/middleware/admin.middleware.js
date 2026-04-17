@@ -22,7 +22,7 @@
 // };
 
 export const adminMiddleware = async (req, context, next) => {
-  console.log("ADMIN USER:", context.user); // should NOT be undefined now
+  // console.log("ADMIN USER:", context.user); // should NOT be undefined now
 
   if (!context.user || context.user.role !== "super_admin") {
     return NextResponse.json(

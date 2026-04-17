@@ -1,23 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getComments } from "@/app/data/comments";
 
 type CommentItem = {
   id: number;
   body: string;
-  postId: number;
-  user?: {
-    username?: string;
+  postId: string;
+  user: {
+    username: string;
   };
 };
 
-function getInitials(username: string) {
-  return username.slice(0, 2).toUpperCase();
+function getWordCount(text?: string) {
+  if (!text) return 0;
+  return text.split(/\s+/).filter(Boolean).length;
 }
 
-function getWordCount(text: string) {
-  return text.split(/\s+/).filter(Boolean).length;
+function getInitials(username?: string) {
+  if (!username) return "NA";
+  return username.slice(0, 2).toUpperCase();
 }
 
 export default function CommentsView() {
@@ -27,45 +28,50 @@ export default function CommentsView() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [draftComment, setDraftComment] = useState("");
 
+  // 🔥 FINAL FETCH (WITH MAPPING)
+  const fetchComments = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://localhost:3000/api/admin/fetchComments",
+        {
+          headers: {
+          },
+        }
+      );
+
+      const data = await res.json();
+      console.log("RAW 👉", data);
+
+      if (!res.ok) throw new Error("Failed");
+
+      // 🔥 🔥 IMPORTANT MAPPING
+      const mapped = (data.comments || data.data || []).map(
+        (item: any, index: number) => ({
+          id: index + 1,
+          body: item.content || item.body || "No content",
+          postId: item.newsId || item.postId || "NA",
+          user: {
+            username: item.user || item.username || "User",
+          },
+        })
+      );
+
+      console.log("MAPPED 👉", mapped);
+
+      setComments(mapped);
+
+    } catch (err) {
+      setError("Comments load nahi ho paaye ❌");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    let isMounted = true;
-
-    getComments()
-      .then((data) => {
-        if (isMounted) {
-          setComments(data);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setError("Comments data load nahi ho paya.");
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
+    fetchComments();
   }, []);
-
-  const uniqueUsers = new Set(
-    comments.map((item) => item.user?.username).filter(Boolean)
-  ).size;
-
-  const averageWords = comments.length
-    ? Math.round(
-        comments.reduce((sum, item) => sum + getWordCount(item.body), 0) /
-          comments.length
-      )
-    : 0;
-  const longestComment = comments.reduce(
-    (max, item) => Math.max(max, getWordCount(item.body)),
-    0
-  );
 
   const handleEdit = (comment: CommentItem) => {
     setEditingId(comment.id);
@@ -78,184 +84,117 @@ export default function CommentsView() {
   };
 
   const handleSaveEdit = (id: number) => {
-    const trimmedComment = draftComment.trim();
+    if (!draftComment.trim()) return;
 
-    if (!trimmedComment) {
-      return;
-    }
-
-    setComments((currentComments) =>
-      currentComments.map((comment) =>
-        comment.id === id ? { ...comment, body: trimmedComment } : comment
+    setComments((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, body: draftComment } : c
       )
     );
+
     handleCancelEdit();
   };
 
   const handleDelete = (id: number) => {
-    setComments((currentComments) =>
-      currentComments.filter((comment) => comment.id !== id)
-    );
-
-    if (editingId === id) {
-      handleCancelEdit();
-    }
+    setComments((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
-    <div className="dashboard-page">
-      <section className="dashboard-subpage-hero">
-        {/* <div>
-          <p className="section-tag">Moderation Desk</p>
-          <h1>Comments management dashboard</h1>
-          <p>
-            Comment activity, user engagement, and moderation flow now have a
-            better dashboard-style view for admins.
-          </p>
-        </div> */}
+    <div className="p-6 bg-gray-50 min-h-screen">
 
-        <div className="dashboard-summary-grid">
-          <div className="dashboard-summary-card">
-            <span>Total Comments</span>
-            <strong>{comments.length}</strong>
-            <small>Live moderation entries</small>
-          </div>
-          <div className="dashboard-summary-card">
-            <span>Unique Users</span>
-            <strong>{uniqueUsers}</strong>
-            <small>Distinct audience voices</small>
-          </div>
-          <div className="dashboard-summary-card">
-            <span>Average Words</span>
-            <strong>{averageWords}</strong>
-            <small>Average response length</small>
-          </div>
-          <div className="dashboard-summary-card">
-            <span>Longest Comment</span>
-            <strong>{longestComment}</strong>
-            <small>Words in a single comment</small>
-          </div>
-        </div>
-      </section>
-
-      <section className="dashboard-panel">
-        <div className="dashboard-panel-head">
-          </div>
+      {/* TABLE */}
+      <div className="bg-white p-4 rounded-xl shadow">
 
         {loading ? (
-          <div className="dashboard-empty-state">Loading comments...</div>
+          <p>Loading...</p>
         ) : error ? (
-          <div className="dashboard-empty-state">{error}</div>
+          <p className="text-red-500">{error}</p>
+        ) : comments.length === 0 ? (
+          <p>No comments found 🚫</p>
         ) : (
-          <div className="dashboard-table-shell">
-            <table className="dashboard-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Comment</th>
-                  <th>Post ID</th>
-                  <th>Length</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3">User</th>
+                <th className="p-3">Comment</th>
+                <th className="p-3">Post</th>
+                <th className="p-3">Words</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
 
-              <tbody>
-                {comments.map((comment) => {
-                  const username = comment.user?.username ?? `user-${comment.id}`;
-                  const isEditing = editingId === comment.id;
-                  const commentText = isEditing ? draftComment : comment.body;
-                  const words = getWordCount(commentText);
+            <tbody>
+              {comments.map((comment) => {
+                const isEditing = editingId === comment.id;
+                const text = isEditing ? draftComment : comment.body;
 
-                  return (
-                    <tr key={comment.id}>
-                      <td data-label="User">
-                        <div className="dashboard-person-cell">
-                          <span className="dashboard-person-avatar">
-                            {getInitials(username)}
-                          </span>
-                          <div className="dashboard-person-meta">
-                            <strong className="dashboard-table-title">{username}</strong>
-                            <p>Community member</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td data-label="Comment">
-                        <div className="dashboard-comment-block">
-                          {isEditing ? (
-                            <textarea
-                              value={draftComment}
-                              onChange={(event) => setDraftComment(event.target.value)}
-                              className="dashboard-comment-editor"
-                              rows={4}
-                            />
-                          ) : (
-                            <p className="dashboard-comment-copy">{comment.body}</p>
-                          )}
-                          <div className="dashboard-comment-meta">
-                            <span>Comment #{comment.id}</span>
-                            <span>{words} words</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td data-label="Post ID">
-                        <span className="dashboard-inline-chip">Post #{comment.postId}</span>
-                      </td>
-                      <td data-label="Length">
-                        <div className="dashboard-table-stack">
-                          <span className="dashboard-badge status-review">
-                            {words} words
-                          </span>
-                          <small>{isEditing ? "Currently editing" : "Ready to review"}</small>
-                        </div>
-                      </td>
-                      <td data-label="Action">
-                        <div className="dashboard-action-group">
-                          {isEditing ? (
-                            <>
-                              <button
-                                type="button"
-                                className="dashboard-action-button dashboard-action-save"
-                                onClick={() => handleSaveEdit(comment.id)}
-                                disabled={!draftComment.trim()}
-                              >
-                                Save
-                              </button>
-                              <button
-                                type="button"
-                                className="dashboard-action-button dashboard-action-cancel"
-                                onClick={handleCancelEdit}
-                              >
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                type="button"
-                                className="dashboard-action-button dashboard-action-edit"
-                                onClick={() => handleEdit(comment)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                type="button"
-                                className="dashboard-action-button dashboard-action-delete"
-                                onClick={() => handleDelete(comment.id)}
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                return (
+                  <tr key={comment.id} className="border-t">
+
+                    <td className="p-3 flex gap-2 items-center">
+                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
+                        {getInitials(comment.user.username)}
+                      </div>
+                      {comment.user.username}
+                    </td>
+
+                    <td className="p-3">
+                      {isEditing ? (
+                        <textarea
+                          value={draftComment}
+                          onChange={(e) => setDraftComment(e.target.value)}
+                          className="border p-2 w-full"
+                        />
+                      ) : (
+                        text
+                      )}
+                    </td>
+
+                    <td className="p-3">#{comment.postId}</td>
+
+                    <td className="p-3">{getWordCount(text)}</td>
+
+                    <td className="p-3 space-x-2">
+                      {isEditing ? (
+                        <>
+                          <button
+                            onClick={() => handleSaveEdit(comment.id)}
+                            className="bg-green-500 text-white px-2 py-1"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="bg-gray-400 text-white px-2 py-1"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEdit(comment)}
+                            className="bg-blue-500 text-white px-2 py-1"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(comment.id)}
+                            className="bg-red-500 text-white px-2 py-1"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </td>
+
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
-      </section>
+      </div>
     </div>
   );
 }

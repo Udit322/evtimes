@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 type HeaderProps = {
   isSidebarOpen: boolean;
   isSidebarCollapsed: boolean;
+  showSidebarToggle: boolean;
   onToggleSidebar: () => void;
 };
 
@@ -63,6 +64,7 @@ function getPageDetails(pathname: string) {
 export default function Header({
   isSidebarOpen,
   isSidebarCollapsed,
+  showSidebarToggle,
   onToggleSidebar,
 }: HeaderProps) {
   const pathname = usePathname();
@@ -82,16 +84,18 @@ export default function Header({
   return (
     <header className="dashboard-topbar">
       <div className="dashboard-topbar-left">
-        <button
-          type="button"
-          className={`dashboard-menu-button ${isSidebarCollapsed ? "is-collapsed" : ""}`}
-          onClick={onToggleSidebar}
-          aria-label={menuLabel}
-          aria-controls="dashboard-sidebar"
-          aria-expanded={isSidebarOpen}
-        >
-          <MenuIcon />
-        </button>
+        {showSidebarToggle ? (
+          <button
+            type="button"
+            className={`dashboard-menu-button ${isSidebarCollapsed ? "is-collapsed" : ""}`}
+            onClick={onToggleSidebar}
+            aria-label={menuLabel}
+            aria-controls="dashboard-sidebar"
+            aria-expanded={isSidebarOpen}
+          >
+            <MenuIcon />
+          </button>
+        ) : null}
 
         <div className="dashboard-topbar-title">
           <span>{currentPage.eyebrow}</span>
