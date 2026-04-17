@@ -6,9 +6,11 @@ import {
   updateNews,
   changeNewsStatus,
   deleteNews,
+  getAllNewswithFilters,
 } from "@/server/repository/NewsRepository/news.repository";
 import slugify from "slugify";
 import News from "@/server/model/NewsModel/news.model";
+
 
 export const createNewsHandler = async (data, userId, role) => {
   const { title, content, description, category } = data;
@@ -65,7 +67,7 @@ export const changeNewsStatusHandler = async (newsId, status, user) => {
 };
 
 export const getAllNewsHandler = async () => {
-  return await getAllNews({ status: "published" });
+  return await getAllNewswithFilters({ status: "published" });
 };
 
 export const getAllPostsHandler = async () => {
@@ -124,7 +126,7 @@ export const deleteNewsHandler = async (newsId, user) => {
 
   //  AUTH CHECK
   if (
-    existingNews.author.toString() !== user.userId &&
+    // existingNews.author.toString() !== user.userId &&
     user.role !== "super_admin"
   ) {
     throw new Error("Not authorized to delete this news");

@@ -1,16 +1,23 @@
 import News from "@/server/model/NewsModel/news.model";
-
+import User from "@/server/model/UserModel/user.model"
 // CREATE
 export const createNews = async (data) => {
   return await News.create(data);
 };
 
 // GET ALL (with filters)
-export const getAllNews = async (filter = {}, options = {}) => {
+export const getAllNewswithFilters = async (filter = {}, options = {}) => {
   return await News.find(filter)
     .populate("author", "username email")
     .sort({ createdAt: -1 });
 };
+
+export const getAllNews = async () => {
+  return await News.find()
+    .populate("author", "username email")
+    .sort({ createdAt: -1 });
+};
+
 
 // GET BY SLUG
 export const getNewsBySlug = async (slug) => {
@@ -32,8 +39,8 @@ export const updateNews = async (id, data) => {
 };
 
 // DELETE
-export const deleteNews = async (id) => {
-  return await News.findByIdAndDelete(id);
+export const deleteNews = async (newsId) => {
+  return await News.findByIdAndDelete(newsId);
 };
 
 // INCREMENT VIEWS
@@ -72,3 +79,10 @@ export const changeNewsStatus = async (newsId, status, user) => {
   return await existingNews.save();
 };
 
+//Increament comment count
+export const incrementCommentCount = async (newsId) => {
+  return await News.findByIdAndUpdate(  newsId,
+    { $inc: { commentsCount: 1 } },
+    { new: true }
+  );
+}

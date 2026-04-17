@@ -8,6 +8,8 @@ import {
   getAllComments
 } from "@/server/repository/CommentsRepository/comment.repository";
 
+import { incrementCommentCount } from "@/server/repository/NewsRepository/news.repository";
+
 // CREATE COMMENT
 export const addComment = async (data) => {
   const { user, news, content, parentComment } = data;
@@ -15,7 +17,7 @@ export const addComment = async (data) => {
   if (!user || !news || !content) {
     throw new Error("Missing required fields");
   }
-
+    await incrementCommentCount(news); // Increment comment count in news document
   return await createComment({
     user,
     news,
