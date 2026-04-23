@@ -41,16 +41,23 @@ export const fetchAllComments = async () => {
 
 
 // DELETE
-export const removeComment = async (commentId, userId) => {
-  const comment = await getCommentById(commentId);
+export const removeComment = async (commentId, user, newsId) => {
+  const {userId,role} = user;
+
+ const comment = await getCommentById(commentId);
 
   if (!comment) throw new Error("Comment not found");
+
+  if( role === "super_admin"){
+    return await deleteComment(commentId);
+  }
+ 
 
   if (comment.user.toString() !== userId) {
     throw new Error("Unauthorized");
   }
 
-  return await deleteComment(commentId);
+  return await deleteComment(commentId, newsId);
 };
 
 // UPDATE

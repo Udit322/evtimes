@@ -29,6 +29,7 @@ export const createNewsHandler = async (data, userId, role) => {
 //To ensure unique slug generation, we will use a helper function that checks for existing slugs and appends a number if needed.
 const generateUniqueSlug = async (title) => {
   let slug = slugify(title, { lower: true });
+
   let count = 1;
 
   while (await News.findOne({ slug })) {
