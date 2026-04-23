@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const compose = (middlewares, handler) => {
   return async (req) => {
-    const context = {}; // shared object ✅
+    const context = {}; 
 
     let index = -1;
 

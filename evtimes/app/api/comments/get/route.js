@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/server/config/db";
 import { fetchComments } from "@/server/controller/comment.controller/comment.controller";
 
-export async function POST(req) {
+export async function POST(req, Response) {
   await connectDB();
 
   try {

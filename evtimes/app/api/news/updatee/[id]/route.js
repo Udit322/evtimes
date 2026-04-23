@@ -1,13 +1,11 @@
 import { updateNewsHandler } from "@/server/controller/news.controller/news.controller";
 import { verifyToken } from "@/server/utils/jwt";
 import { connectDB } from "@/server/config/db";
-export async function PUT(req, { params }) {
+
+export async function PUT(req, context) {
   try {
-
     await connectDB();
-
-       const resolvedParams = await params;
-    const id = resolvedParams.id;
+    const { id } = await context.params;
 
     if (!id) {
       throw new Error("Invalid ID");
@@ -19,11 +17,7 @@ export async function PUT(req, { params }) {
     
     const decoded = verifyToken(token);
 
-    const updatedNews = await updateNewsHandler(
-      resolvedParams.id,
-      body,
-      decoded
-    );
+    const updatedNews = await updateNewsHandler(id, body, decoded);
 
     return Response.json({
       message: "News updated successfully",
