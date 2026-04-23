@@ -14,7 +14,7 @@ export const verifyToken = (token) => {
   }
 
   try {
-    const decoded = jwt.verify(token,"123456cdc" );
+    const decoded = jwt.verify(token,JWT_SECRET );
     return decoded; // { userId, role, iat, exp }
   } catch (err) {
     throw new Error("Invalid or expired token");

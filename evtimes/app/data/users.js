@@ -1,10 +1,10 @@
 export async function getUsers() {
-  const token = localStorage.getItem("token");
+
 
   const res = await fetch("http://localhost:3000/api/admin/fetchUsers", {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+    
     },
   });
 

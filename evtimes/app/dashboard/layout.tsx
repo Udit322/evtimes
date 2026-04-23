@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/app/Component/Sidebar";
 import Header from "@/app/Component/Header";
 
-import "./dasboard.css";
+import "./dashboard.css";
 
 const MOBILE_BREAKPOINT = 960;
 
@@ -15,21 +15,25 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   const [hasToken] = useState(() =>
     typeof window === "undefined"
       ? false
       : Boolean(window.localStorage.getItem("token"))
   );
 
+  /* ---------------- AUTH CHECK ---------------- */
   useEffect(() => {
     if (!hasToken) {
       router.replace("/login");
     }
   }, [hasToken, router]);
 
+  /* ---------------- RESPONSIVE ---------------- */
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
 
@@ -52,6 +56,7 @@ export default function DashboardLayout({
     };
   }, []);
 
+  /* ---------------- BODY SCROLL LOCK ---------------- */
   useEffect(() => {
     if (!isMobileViewport || !isMobileSidebarOpen) {
       document.body.style.overflow = "";
@@ -65,42 +70,45 @@ export default function DashboardLayout({
     };
   }, [isMobileSidebarOpen, isMobileViewport]);
 
+  /* ---------------- TOGGLE LOGIC ---------------- */
   const handleToggleSidebar = () => {
     if (isMobileViewport) {
-      setIsMobileSidebarOpen((current) => !current);
-      return;
+      setIsMobileSidebarOpen((prev) => !prev);
+    } else {
+      setIsSidebarCollapsed((prev) => !prev); // 🔥 MAIN FIX
     }
-
-    setIsSidebarCollapsed((current) => !current);
   };
 
-  if (!hasToken) {
-    // return (
-    //   <div className="flex min-h-screen items-center justify-center bg-white">
-    //     <p className="text-sm text-[var(--txt2)]">Checking dashboard access...</p>
-    //   </div>
-    // );
-  }
+  /* ---------------- RENDER ---------------- */
 
   return (
     <div
-      className={`dashboard-layout ${isSidebarCollapsed ? "is-sidebar-collapsed" : ""} ${
-        isMobileSidebarOpen ? "is-mobile-sidebar-open" : ""
-      }`}
+      className={`dashboard-layout 
+        ${isSidebarCollapsed ? "is-sidebar-collapsed" : ""} 
+        ${isMobileSidebarOpen ? "is-mobile-sidebar-open" : ""}
+      `}
     >
+      {/* ✅ FIX ADDED HERE */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         isMobile={isMobileViewport}
         isMobileOpen={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        onToggleCollapse={handleToggleSidebar}   // 🔥 THIS LINE FIXES EVERYTHING
       />
 
       <div className="dashboard-main">
         <Header
-          isSidebarOpen={isMobileViewport ? isMobileSidebarOpen : !isSidebarCollapsed}
+          showSidebarToggle={isMobileViewport}
+          isSidebarOpen={
+            isMobileViewport
+              ? isMobileSidebarOpen
+              : !isSidebarCollapsed
+          }
           isSidebarCollapsed={isSidebarCollapsed}
           onToggleSidebar={handleToggleSidebar}
         />
+
         <main className="dashboard-content">{children}</main>
       </div>
     </div>

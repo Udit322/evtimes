@@ -38,11 +38,17 @@ const generateUniqueSlug = async (title) => {
 
 const slug = await generateUniqueSlug(title);
 
-  return await createNews({
+  const createPayload = {
     ...data,
     slug,
     author: userId,
-  });
+  };
+
+  if (createPayload.status === "published" && !createPayload.publishedAt) {
+    createPayload.publishedAt = new Date();
+  }
+
+  return await createNews(createPayload);
 };
 
 export const changeNewsStatusHandler = async (newsId, status, user) => {
@@ -94,11 +100,11 @@ if (user.role === "user") {// user cant update news only admin and super admin c
     throw new Error("Not authorized to update news");
   }
 
+  const isOwner = existingNews.author?.toString() === user.userId;
+  const canModerate = ["admin", "super_admin", "staff"].includes(user.role);
+
   //  AUTH CHECK
-  if (
-    existingNews.author.toString() !== user.userId ||  // consider whether only author can update the news or admin can also update the news if author is not updating the news then only admin can update the news and super admin can update any news
-    user.role == "user" 
-  ) {
+  if (!isOwner && !canModerate) {
     throw new Error("Not authorized to update this news");
   }
 

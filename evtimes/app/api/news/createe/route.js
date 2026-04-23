@@ -1,11 +1,13 @@
 import { createNewsHandler } from "@/server/controller/news.controller/news.controller";
 import { connectDB } from "@/server/config/db";
+import { verifyToken } from "@/server/utils/jwt";
 // import {authMiddleware} from "@/server/middleware/auth.middleware";
 // import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
     await connectDB();
+    const body = await req.json();
 
     // const token = req.headers.get("authorization")?.split(" ")[1];
     
@@ -19,11 +21,13 @@ export async function POST(req) {
 
     const news = await createNewsHandler(body, decoded.userId, decoded.role);
 
-    const news = await createNewsHandler(body, userId);
+    // const news = await createNewsHandler(body, userId);
+
     return Response.json({
       message: "News created",
       news,
     });
+
   } catch (err) {
     return Response.json({ error: err.message }, { status: 400 });
   }

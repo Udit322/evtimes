@@ -23,7 +23,7 @@ import { NextResponse } from "next/server";
     async (req, context) => {
       const { userId,status } = await req.json();  
     
-    console.log("User:", context.user); // debug
+    // console.log("User:", context.user); // debug
      
         await updateUserStatus(userId, status);
          
