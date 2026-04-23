@@ -49,7 +49,7 @@ export const removeComment = async (commentId, user, newsId) => {
   if (!comment) throw new Error("Comment not found");
 
   if( role === "super_admin"){
-    return await deleteComment(commentId);
+    return await deleteComment(commentId, newsId);
   }
  
 
@@ -58,6 +58,7 @@ export const removeComment = async (commentId, user, newsId) => {
   }
 
   return await deleteComment(commentId, newsId);
+ 
 };
 
 // UPDATE
