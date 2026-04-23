@@ -141,3 +141,40 @@ export const updateUserRole = async (userId, role) => {
     role,
   });
 }
+
+export const findUserByEmailHandler = async (email) => {
+  if (!email) {
+    throw new Error("Email is required");
+  } 
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    throw new Error("User not found");
+  } 
+  return user;
+}
+
+
+export const findUserByNameHandler = async (name) => {
+  if (!name) {
+    throw new Error("Name is required");
+  } 
+  const user = await findUserByName(name);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+}
+
+export const findUserByIdHandler = async (userId) => {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+}
