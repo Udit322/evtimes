@@ -18,12 +18,13 @@ import { validateEmail, validatePassword } from "@/server/utils/validator";
 
 export const registerUser = async (data) => {
   const { name, email, password } = data;
+  const normalizedEmail = email?.trim().toLowerCase();
 
-  if (!name || !email || !password) {
+  if (!name || !normalizedEmail || !password) {
     throw new Error("All fields are required");
   }
 
-  if (!validateEmail(email)) {
+  if (!validateEmail(normalizedEmail)) {
     throw new Error("Invalid email");
   }
 
@@ -31,7 +32,7 @@ export const registerUser = async (data) => {
     throw new Error("Weak password");
   }
 
-  const existingUser = await findUserByEmail(email);
+  const existingUser = await findUserByEmail(normalizedEmail);
   if (existingUser) {
     throw new Error("User already exists");
   }
@@ -39,8 +40,8 @@ export const registerUser = async (data) => {
   const hashedPassword = await hashPassword(password);
 
   const user = await createUser({
-    name,
-    email,
+    name: name.trim(),
+    email: normalizedEmail,
     password: hashedPassword,
   });
 
@@ -82,12 +83,13 @@ export const fetchAllUsers = async () => {
 
 export const loginUser = async (data) => {
   const { email, password } = data;
+  const normalizedEmail = email?.trim().toLowerCase();
 
-  if (!email || !password) {
+  if (!normalizedEmail || !password) {
     throw new Error("All fields are required");
   }
 
-  const user = await findUserWithPassword(email);
+  const user = await findUserWithPassword(normalizedEmail);
 
   if (!user) {
     throw new Error("Invalid credentials");
@@ -118,7 +120,14 @@ export const loginUser = async (data) => {
   return {
     message: "Login successful",
     token,
-    //user
+    user: {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      isVerified: user.isVerified,
+    },
   };
 };
 

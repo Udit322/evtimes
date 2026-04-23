@@ -1,16 +1,31 @@
-import{addFavourite} from "@/server/controller/favourite.controller/favourite.controller";
-import { NextResponse } from "next/server";
 import { connectDB } from "@/server/config/db";
-
-
-
+import Favourite from "@/server/model/Favourite/favourite.model";
 
 export async function POST(req) {
+  try {
     await connectDB();
-    try {        const body = await req.json();
-        const result = await addFavourite(body);
-        return NextResponse.json(result, { status: 201 });
-    } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }  
-};
+
+    const body = await req.json();
+    const { userId, newsId } = body;
+
+    if (!userId || !newsId) {
+      return Response.json(
+        { error: "Missing fields" },
+        { status: 400 }
+      );
+    }
+
+    const fav = await Favourite.create({ userId, newsId });
+
+    return Response.json({
+      message: "Favourite created ✅",
+      data: fav,
+    });
+
+  } catch (err) {
+    return Response.json(
+      { error: err.message },
+      { status: 500 }
+    );
+  }
+}

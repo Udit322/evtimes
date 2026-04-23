@@ -6,19 +6,16 @@ import { decrementCommentCount } from "@/server/repository/NewsRepository/news.r
 export const createComment = async (data) => {
   return await Comment.create(data);
 };
-
 // GET COMMENTS BY NEWS (with nested support later)
 export const getCommentsByNews = async (newsId) => {
   return await Comment.find({ news: newsId })
     .populate("user", "username")
     .sort({ createdAt: -1 });
 };
-
 // GET SINGLE COMMENT
 export const getCommentById = async (id) => {
   return await Comment.findById(id);
 };
-
 // DELETE COMMENT
 export const deleteComment = async (id, newsId) => {
 

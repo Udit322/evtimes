@@ -126,9 +126,9 @@ export const updateRoleById = async (userId, updateData) => {
       throw new Error("User not found");
     }
     
-    console.log("Updated User Role:", updatedUser); // Debug log for updated user role
-    console.log("Update Data for Role:", updateData); // Debug log for update data for role
-    console.log("User ID for Role Update:", userId); // Debug log for user ID for role update
+     //console.log("Updated User Role:", updatedUser); // Debug log for updated user role
+    // console.log("Update Data for Role:", updateData); // Debug log for update data for role
+    // console.log("User ID for Role Update:", userId); // Debug log for user ID for role update
     return updatedUser;
   } catch (error) {
     throw new Error(error.message);

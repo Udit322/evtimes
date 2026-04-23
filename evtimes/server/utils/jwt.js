@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = "123456cdc";
 
 export const generateToken = (userId, role) => {
   return jwt.sign({ userId, role }, JWT_SECRET, {
@@ -14,7 +14,7 @@ export const verifyToken = (token) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token,JWT_SECRET );
     return decoded; // { userId, role, iat, exp }
   } catch (err) {
     throw new Error("Invalid or expired token");
