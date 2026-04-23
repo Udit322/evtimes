@@ -91,6 +91,6 @@ export const incrementCommentCount = async (newsId) => {
 export const decrementCommentCount = async (newsId) => {
   return await News.findByIdAndUpdate(  newsId,
     { $inc: { commentsCount: -1 } },
-    { new: true }
+    { returnDocument: "after" }
   );
 }
