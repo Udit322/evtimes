@@ -8,6 +8,9 @@ export const authMiddleware = async (req, context, next) => {
     
    
 
+    //console.log("Token from cookies:", token); // debug
+
+
     if (!token) {
       return NextResponse.json(
         { message: "Unauthorized" },

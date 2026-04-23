@@ -20,3 +20,5 @@ export const bookmarkNews = async (userId, newsId) => {
 
   return await addBookmark(userId, newsId);
 };
+
+

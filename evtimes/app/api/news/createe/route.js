@@ -12,6 +12,13 @@ export async function POST(req) {
     // const token = req.headers.get("authorization")?.split(" ")[1];
     
      const token = req.cookies.get("token")?.value;
+
+     if (!token) {
+      return Response.json(
+        { message: "please log in!" },
+        { status: 401 }
+      );
+    }
     
     const decoded = verifyToken(token);
 
