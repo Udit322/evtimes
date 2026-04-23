@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { getNews } from "@/app/data/new";
 
 type NewsItem = {
@@ -11,19 +11,24 @@ type NewsItem = {
   category?: string;
   tags?: string[];
   image?: string;
-
-  // 🔥 FIX: string OR object dono handle
-  author?: string | {
-    _id?: string;
-    email?: string;
-  };
-
+  author?: string | { _id?: string; email?: string };
   createdAt?: string;
 };
 
 function formatDate(date?: string) {
-  if (!date) return "Not available";
+  if (!date) return "—";
   return new Date(date).toLocaleDateString("en-GB");
+}
+
+function getAuthorEmail(author: NewsItem["author"]) {
+  if (!author) return null;
+  if (typeof author === "string") return author;
+  return author.email || null;
+}
+
+function getAuthorId(author: NewsItem["author"]) {
+  if (!author || typeof author === "string") return null;
+  return author._id || null;
 }
 
 export default function News() {
@@ -31,30 +36,16 @@ export default function News() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // LOAD DATA
-  const loadNews = async () => {
-    try {
-      const data = await getNews();
-      console.log("NEWS:", data);
-
-      setNews(Array.isArray(data) ? data : []);
-    } catch {
-      setError("News load nahi ho paya");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadNews();
+    getNews()
+      .then((data) => setNews(Array.isArray(data) ? data : []))
+      .catch(() => setError("News load nahi ho paya"))
+      .finally(() => setLoading(false));
   }, []);
 
-  // 🔥 FIXED AUTHOR COUNT
   const uniqueAuthors = new Set(
     news.map((item) =>
-      typeof item.author === "string"
-        ? item.author
-        : item.author?._id
+      typeof item.author === "string" ? item.author : item.author?._id
     )
   ).size;
 
@@ -63,87 +54,113 @@ export default function News() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
 
-      {/* SUMMARY */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-xl shadow">
-          <span className="text-gray-500 text-sm">Total Stories</span>
-          <h2 className="text-2xl font-bold">{news.length}</h2>
-        </div>
+      {/* SUMMARY CARDS */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {[
+          { label: "Total stories", value: news.length },
+          { label: "Authors", value: uniqueAuthors },
+          { label: "Dated stories", value: datedStories },
+        ].map((card) => (
+          <div
+            key={card.label}
+            className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
+          >
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+              {card.label}
+            </p>
+            <h2 className="text-2xl font-semibold text-gray-800">{card.value}</h2>
+          </div>
+        ))}
+      </div>
 
-        <div className="bg-white p-4 rounded-xl shadow">
-          <span className="text-gray-500 text-sm">Authors</span>
-          <h2 className="text-2xl font-bold">{uniqueAuthors}</h2>
+      {/* TABLE CARD */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-semibold text-gray-800">All stories</h2>
         </div>
-
-        <div className="bg-white p-4 rounded-xl shadow">
-          <span className="text-gray-500 text-sm">Dated Stories</span>
-          <h2 className="text-2xl font-bold">{datedStories}</h2>
-        </div>
-      </section>
-
-      {/* TABLE */}
-      <section className="bg-white rounded-xl shadow overflow-hidden">
 
         {loading ? (
-          <div className="p-4">Loading...</div>
+          <div className="p-8 text-center text-sm text-gray-400">Loading...</div>
         ) : error ? (
-          <div className="p-4 text-red-500">{error}</div>
+          <div className="p-8 text-center text-sm text-red-400">{error}</div>
         ) : news.length === 0 ? (
-          <div className="p-4 text-gray-500">No data found 🚫</div>
+          <div className="p-8 text-center text-sm text-gray-400">No stories found</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-600">
-              <tr>
-                <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left">Content</th>
-                <th className="p-3 text-left">Author ID</th>
-                <th className="p-3 text-left">Date</th>
+            <thead>
+              <tr className="text-left text-xs text-gray-400 uppercase tracking-wide bg-gray-50">
+                <th className="px-6 py-3 font-small w-[22%]">Title</th>
+                <th className="px-6 py-3 font-medium w-[35%]">Content</th>
+                <th className="px-6 py-3 font-medium w-[28%]">Author</th>
+                <th className="px-6 py-3 font-medium w-[15%]">Date</th>
               </tr>
             </thead>
 
-            <tbody>
-              {news.map((item, index) => (
-                <tr
-                  key={item._id || index}
-                  className="border-t hover:bg-gray-50"
-                >
-                  <td className="p-3">
-                    {item.title || "No Title"}
-                  </td>
+            <tbody className="divide-y divide-gray-50">
+              {news.map((item, index) => {
+                const email = getAuthorEmail(item.author);
+                const authorId = getAuthorId(item.author);
+                const initials = email
+                  ? email.slice(0, 2).toUpperCase()
+                  : "NA";
 
-                  <td className="p-3">
-                    {item.content?.slice(0, 50) || "No Content"}...
-                  </td>
+                return (
+                  <tr
+                    key={item._id || index}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    {/* TITLE */}
+                    <td className="px-6 py-4">
+                      <span className="font-medium text-gray-800 line-clamp-1">
+                        {item.title || "No title"}
+                      </span>
+                      {item.category && (
+                        <span className="mt-1 inline-block text-xs  text-green-500 px-2 py-0.5 rounded-md">
+                          {item.category}
+                        </span>
+                      )}
+                    </td>
 
-                  {/* 🔥 FINAL AUTHOR FIX */}
-                  <td className="p-3 text-sm">
-                    {item.author ? (
-                      typeof item.author === "object" ? (
-                        <div>
-                          <p className="font-medium">
-                            {item.author.email || "No Email"}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {item.author._id}
-                          </p>
+                    {/* CONTENT */}
+                    <td className="px-6 py-4 text-gray-500 line-clamp-2">
+                      {item.content?.slice(0, 80) || "No content"}
+                      {item.content && item.content.length > 80 ? "..." : ""}
+                    </td>
+
+                    {/* AUTHOR */}
+                    <td className="px-6 py-4">
+                      {email ? (
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-semibold shrink-0">
+                            {initials}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-gray-700 font-medium truncate">{email}</p>
+                            {authorId && (
+                              <p className="text-xs text-gray-400 font-mono truncate">
+                                {authorId}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       ) : (
-                        item.author
-                      )
-                    ) : (
-                      "No Author"
-                    )}
-                  </td>
+                        <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+                          No author
+                        </span>
+                      )}
+                    </td>
 
-                  <td className="p-3">
-                    {formatDate(item.createdAt)}
-                  </td>
-                </tr>
-              ))}
+                    {/* DATE */}
+                    <td className="px-6 py-4 text-gray-500 tabular-nums">
+                      {formatDate(item.createdAt)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
-      </section>
+      </div>
     </div>
   );
 }

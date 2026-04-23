@@ -1375,7 +1375,45 @@
     /* Text */
     --text-strong: #111827;
     --text-main: #374151;
-    --text-soft: #6b7280;
+    --text-soft: #6b7280;.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.confirm-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.cancel {
+  background: #ddd;
+}
+
+.confirm {
+  background: red;
+  color: white;
+}
 
     /* Green accent ramp — Donezo dark greens */
     --green-1: #1a6b3c;
@@ -2053,6 +2091,17 @@
     gap: 14px;
 }
 
+.dashboard-panel,
+.card,
+.dashboard-panel-head > div,
+.dashboard-card-head > div:first-child,
+.dashboard-activity-copy,
+.dashboard-task-item div,
+.dashboard-person-cell,
+.dashboard-person-meta {
+    min-width: 0;
+}
+
 .dashboard-home-hero,
 .dashboard-subpage-hero {
     display: grid;
@@ -2706,13 +2755,29 @@
         flex-wrap: wrap;
     }
 
+    .dashboard-topbar-left,
+    .dashboard-topbar-right {
+        width: 100%;
+    }
+
     .dashboard-content {
         padding: 16px 14px 24px;
     }
 
     .dashboard-topbar-right {
+        margin-left: 0;
         width: 100%;
         justify-content: space-between;
+    }
+
+    .dashboard-topbar-nav {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .dashboard-topbar-link {
+        flex: 0 1 auto;
     }
 
     .dashboard-topbar-search-shell {
@@ -2728,6 +2793,11 @@
 @media (max-width: 720px) {
     .dashboard-inline-nav {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-home,
+    .dashboard-page {
+        gap: 12px;
     }
 
     .dashboard-home-toolbar {
@@ -2759,12 +2829,54 @@
         align-items: flex-start;
     }
 
+    .dashboard-topbar-left {
+        align-items: flex-start;
+    }
+
+    .dashboard-topbar-right,
+    .dashboard-topbar-nav {
+        gap: 8px;
+    }
+
+    .dashboard-topbar-link {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 0;
+    }
+
+    .dashboard-topbar-title,
+    .dashboard-activity-copy,
+    .dashboard-task-item div,
+    .dashboard-person-cell,
+    .dashboard-person-meta,
+    .dashboard-inline-chip,
+    .dashboard-chip {
+        width: 100%;
+    }
+
     .dashboard-topbar-title strong {
         font-size: 20px;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
     }
 
     .dashboard-topbar-user {
         width: 100%;
+        justify-content: flex-start;
+    }
+
+    .dashboard-panel-head h2,
+    .dashboard-activity-copy strong,
+    .dashboard-task-item strong,
+    .dashboard-table-title,
+    .dashboard-person-meta p,
+    .card h4,
+    .card small {
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-inline-chip,
+    .dashboard-chip {
+        white-space: normal;
         justify-content: flex-start;
     }
 
@@ -2824,8 +2936,32 @@
 }
 
 @media (max-width: 520px) {
+    .dashboard-layout {
+        --layout-gap: 10px;
+    }
+
+    .dashboard-sidebar-shell {
+        width: min(88vw, 280px);
+    }
+
     .dashboard-inline-nav {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-content {
+        padding: 14px 10px 20px;
+    }
+
+    .dashboard-topbar {
+        padding: 12px;
+    }
+
+    .dashboard-topbar-link {
+        flex-basis: 100%;
+    }
+
+    .card p {
+        font-size: clamp(20px, 8vw, 28px);
     }
 }
 

@@ -128,7 +128,7 @@ export default function PostNews() {
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+                // @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
                 .pn-root * { box-sizing: border-box; }
                 .pn-root { font-family: 'DM Sans', sans-serif; }
                 .pn-title { font-family: 'Syne', sans-serif; }
@@ -140,13 +140,12 @@ export default function PostNews() {
                 @keyframes pnFade { from{opacity:0} to{opacity:1} }
                 .pn-modal { animation: pnSlide .22s cubic-bezier(.22,1,.36,1); }
                 @keyframes pnSlide { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
-                .pn-btn-add { background: linear-gradient(135deg,#4f46e5,#818cf8); }
-                .pn-btn-add:hover { background: linear-gradient(135deg,#4338ca,#6366f1); box-shadow:0 4px 16px rgba(79,70,229,.35); transform:translateY(-1px); }
+                .pn-btn-add { background: linear-gradient(135deg,#386641); }
+                // .pn-btn-add:hover { background: linear-gradient(135deg,#4338ca,#6366f1); box-shadow:0 4px 16px rgba(79,70,229,.35); transform:translateY(-1px); }
                 .pn-btn-publish { background: linear-gradient(135deg,#059669,#34d399); }
                 .pn-btn-publish:hover { background: linear-gradient(135deg,#047857,#10b981); box-shadow:0 4px 16px rgba(5,150,105,.3); transform:translateY(-1px); }
                 .pn-tag:hover { background:#e0e7ff; color:#4338ca; }
-                .pn-edit-btn { transition: all .15s; }
-                .pn-edit-btn:hover { background:#ede9fe; border-color:#c4b5fd; color:#6d28d9; transform:translateY(-1px); }
+                
             `}</style>
 
             <div className="pn-root min-h-screen p-6 md:p-8" style={{ background: "linear-gradient(135deg,#f8faff 0%,#ffffff 50%,#f5f3ff 100%)" }}>
@@ -257,7 +256,7 @@ export default function PostNews() {
 
                                     {/* Edit button */}
                                     <button onClick={() => handleEdit(item)}
-                                        className="pn-edit-btn shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-2 text-xs font-semibold text-indigo-600 active:scale-95">
+                                        className="pn-edit-btn shrink-0 inline-flex items-center gap-1.5 rounded-xl border  bg-green-50 px-3.5 py-2 text-xs font-semibold text-green-600 active:scale-95">
                                         <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
                                         Edit
                                     </button>

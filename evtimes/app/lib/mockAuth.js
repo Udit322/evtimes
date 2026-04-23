@@ -80,22 +80,25 @@ export function getSessionUser() {
   }
 }
 
+
 export function clearSessionUser() {
-  if (typeof window === "undefined") {
-    return;
+   if (typeof window === "undefined") 
+    { 
+      return; 
+    } 
+    cachedSessionRaw = null; 
+    cachedSessionUser = null; 
+    window.localStorage.removeItem(SESSION_KEY); 
+    window.localStorage.removeItem("token"); 
+    window.localStorage.removeItem("user"); 
+    window.dispatchEvent(new Event(SESSION_EVENT)); 
   }
 
-  cachedSessionRaw = null;
-  cachedSessionUser = null;
-  window.localStorage.removeItem(SESSION_KEY);
-  window.localStorage.removeItem("token");
-  window.localStorage.removeItem("user");
-  window.dispatchEvent(new Event(SESSION_EVENT));
-}
+
 
 export function subscribeToSessionChange(callback) {
   if (typeof window === "undefined") {
-    return () => {};
+    return () => { };
   }
 
   const handleChange = () => callback();

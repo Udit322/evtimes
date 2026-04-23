@@ -99,6 +99,7 @@ export default function DashboardLayout({
 
       <div className="dashboard-main">
         <Header
+          showSidebarToggle={isMobileViewport}
           isSidebarOpen={
             isMobileViewport
               ? isMobileSidebarOpen

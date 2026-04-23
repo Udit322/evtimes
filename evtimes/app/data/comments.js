@@ -1,7 +1,7 @@
 // ✅ GET COMMENTS
 export async function getComments() {
   try {
-    const res = await fetch("http://localhost:3000/api/comments/get");
+    const res = await fetch("http://localhost:3000/api/admin/fetchComments");
 
     if (!res.ok) {
       throw new Error("Failed to fetch");

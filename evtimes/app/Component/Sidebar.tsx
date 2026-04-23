@@ -3,8 +3,9 @@
 import type { ReactElement } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { clearSessionUser } from "@/app/lib/mockAuth";
+import Confirmation from "../Component/Confirmation";
 
 type IconProps = {
   className?: string;
@@ -116,10 +117,10 @@ const navSections: NavSection[] = [
   {
     label: "Workspace",
     items: [
-      { href: "/dashboard/news",     label: "News",     icon: NewsIcon     },
+      { href: "/dashboard/news", label: "News", icon: NewsIcon },
       { href: "/dashboard/comments", label: "Comments", icon: CommentsIcon },
-      { href: "/dashboard/posts",    label: "Posts",    icon: PostsIcon    },
-      { href: "/dashboard/users",    label: "Users",    icon: UsersIcon    },
+      { href: "/dashboard/posts", label: "Posts", icon: PostsIcon },
+      { href: "/dashboard/users", label: "Users", icon: UsersIcon },
     ],
   },
 ];
@@ -132,7 +133,8 @@ export default function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
-  const router   = useRouter();
+  const router = useRouter();
+   const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (!isMobileOpen) return;
@@ -148,13 +150,23 @@ export default function Sidebar({
 
   const handleNavigate = () => { if (isMobile) onCloseMobile(); };
 
-  const handleLogout = () => {
-    clearSessionUser();
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout API failed", error);
+    }
+
+    // local cleanup
+    clearSessionUser()
     onCloseMobile();
-    router.push("/");
+    router.push("/");//To Consider
   };
 
   return (
+
     <>
       <button
         type="button"
@@ -215,7 +227,7 @@ export default function Sidebar({
                 <nav className="dashboard-sidebar-nav">
                   {section.items.map((item) => {
                     const active = isActive(item.href);
-                    const Icon   = item.icon;
+                    const Icon = item.icon;
                     return (
                       <Link
                         key={item.href}
@@ -239,12 +251,11 @@ export default function Sidebar({
             ))}
           </div>
 
-          <div className="dashboard-sidebar-footer">
+           <div className="dashboard-sidebar-footer">
             <button
               type="button"
               className="dashboard-logout-button"
-              onClick={handleLogout}
-              title={isCollapsed ? "Logout" : undefined}
+              onClick={() => setShowConfirm(true)}   // ✅ changed
             >
               <LogoutIcon className="dashboard-logout-icon" />
               <span>Logout</span>
@@ -252,6 +263,19 @@ export default function Sidebar({
           </div>
         </div>
       </aside>
+
+
+
+      <Confirmation
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={async () => {
+          setShowConfirm(false);
+          await handleLogout();
+        }}
+      />
     </>
+
+   
   );
 }

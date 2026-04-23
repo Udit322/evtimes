@@ -31,32 +31,25 @@ export default function CommentsView() {
   // 🔥 FINAL FETCH (WITH MAPPING)
   const fetchComments = async () => {
     try {
-      const token = localStorage.getItem("token");
-
       const res = await fetch(
-        "http://localhost:3000/api/admin/fetchComments",
-        {
-          headers: {
-          },
-        }
+        "http://localhost:3000/api/admin/fetchComments"
       );
 
       const data = await res.json();
+
       console.log("RAW 👉", data);
 
       if (!res.ok) throw new Error("Failed");
 
-      // 🔥 🔥 IMPORTANT MAPPING
-      const mapped = (data.comments || data.data || []).map(
-        (item: any, index: number) => ({
-          id: index + 1,
-          body: item.content || item.body || "No content",
-          postId: item.newsId || item.postId || "NA",
-          user: {
-            username: item.user || item.username || "User",
-          },
-        })
-      );
+      // ✅ DIRECT ARRAY MAP
+      const mapped = data.map((item: any, index: number) => ({
+        id: index + 1,
+        body: item.content || "No content",
+        postId: item.news || "NA",
+        user: {
+          username: item.user || "User",
+        },
+      }));
 
       console.log("MAPPED 👉", mapped);
 
@@ -115,11 +108,11 @@ export default function CommentsView() {
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="p-3">User</th>
-                <th className="p-3">Comment</th>
-                <th className="p-3">Post</th>
-                <th className="p-3">Words</th>
-                <th className="p-3">Action</th>
+                <th className="p-3 text-left">User</th>
+                <th className="p-3 text-left ">Comment</th>
+                <th className="p-3 text-left">Post</th>
+                <th className="p-3 text-left">Words</th>
+                <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
 
@@ -153,41 +146,41 @@ export default function CommentsView() {
                     <td className="p-3">#{comment.postId}</td>
 
                     <td className="p-3">{getWordCount(text)}</td>
-
-                    <td className="p-3 space-x-2">
-                      {isEditing ? (
-                        <>
-                          <button
-                            onClick={() => handleSaveEdit(comment.id)}
-                            className="bg-green-500 text-white px-2 py-1"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="bg-gray-400 text-white px-2 py-1"
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => handleEdit(comment)}
-                            className="bg-blue-500 text-white px-2 py-1"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(comment.id)}
-                            className="bg-red-500 text-white px-2 py-1"
-                          >
-                            Delete
-                          </button>
-                        </>
-                      )}
-                    </td>
-
+               <td className="p-4 text-right">
+  <div className="inline-flex items-center gap-3">
+    {isEditing ? (
+      <>
+        <button
+          onClick={() => handleSaveEdit(comment.id)}
+          className="bg-green-500 text-white px-2 py-1"
+        >
+          Save
+        </button>
+        <button
+          onClick={handleCancelEdit}
+          className="bg-gray-400 text-white px-2 py-1"
+        >
+          Cancel
+        </button>
+      </>
+    ) : (
+      <>
+        <button
+          onClick={() => handleEdit(comment)}
+          className="bg-green-500 text-white px-2 py-1"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => handleDelete(comment.id)}
+          className="bg-green-500 text-white px-2 py-1"
+        >
+          Delete
+        </button>
+      </>
+    )}
+  </div>
+</td>
                   </tr>
                 );
               })}
