@@ -1,7 +1,7 @@
 import { writeFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
-// import { authMiddleware } from "@/server/middleware/auth.middleware";
+import { authMiddleware } from "@/server/middleware/auth.middleware";
 
 export async function POST(req) {
   try {
@@ -12,7 +12,7 @@ export async function POST(req) {
       user = context.user;
     });
 
-    if (!user) {
+    if (!user  || user.role == "user") {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -92,3 +92,4 @@ export async function POST(req) {
     );
   }
 }
+

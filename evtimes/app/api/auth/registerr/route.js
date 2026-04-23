@@ -19,6 +19,8 @@ export async function POST(req) {
   }
 };
 
+
+
 // import { NextResponse } from "next/server";
 // import { connectDB } from "@/server/config/db";
 // import { registerUser } from "@/server/controller/auth.controller/auth.controller";
@@ -43,3 +45,6 @@ export async function POST(req) {
 //     }
 //   }
 // );
+
+
+
