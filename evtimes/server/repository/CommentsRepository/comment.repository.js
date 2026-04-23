@@ -1,7 +1,6 @@
 import Comment from "@/server/model/CommentsModel/comment.model";
 import User from "@/server/model/UserModel/user.model";
-
-
+import { decrementCommentCount } from "../NewsRepository/news.repository";
 // CREATE
 export const createComment = async (data) => {
   return await Comment.create(data);
@@ -17,8 +16,10 @@ export const getCommentById = async (id) => {
   return await Comment.findById(id);
 };
 // DELETE COMMENT
-export const deleteComment = async (id) => {
+export const deleteComment = async (id, newsId) => {
   return await Comment.findByIdAndDelete(id);
+  await decrementCommentCount(newsId);
+
 };
 // UPDATE COMMENT
 export const updateComment = async (id, content) => {

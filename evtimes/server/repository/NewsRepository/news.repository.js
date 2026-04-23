@@ -86,3 +86,11 @@ export const incrementCommentCount = async (newsId) => {
     { new: true }
   );
 }
+
+//Decreament comment count
+export const decrementCommentCount = async (newsId) => {
+  return await News.findByIdAndUpdate(  newsId,
+    { $inc: { commentsCount: -1 } },
+    { new: true }
+  );
+}
