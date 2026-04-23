@@ -96,91 +96,117 @@ export default function CommentsView() {
     <div className="p-6 bg-gray-50 min-h-screen">
 
       {/* TABLE */}
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+        {/* HEADER */}
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-semibold text-gray-800">All Comments</h2>
+        </div>
 
         {loading ? (
-          <p>Loading...</p>
+          <div className="p-8 text-center text-sm text-gray-400">Loading...</div>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <div className="p-8 text-center text-sm text-red-400">{error}</div>
         ) : comments.length === 0 ? (
-          <p>No comments found 🚫</p>
+          <div className="p-8 text-center text-sm text-gray-400">No comments found</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3 text-left">User</th>
-                <th className="p-3 text-left ">Comment</th>
-                <th className="p-3 text-left">Post</th>
-                <th className="p-3 text-left">Words</th>
-                <th className="p-3 text-right">Action</th>
+
+            {/* HEADER */}
+            <thead>
+              <tr className="text-left text-xs text-gray-400 uppercase bg-gray-50">
+                <th className="px-6 py-3">User</th>
+                <th className="px-6 py-3">Comment</th>
+                <th className="px-6 py-3">Post</th>
+                <th className="px-6 py-3">Words</th>
+                <th className="px-6 py-3 text-right">Action</th>
               </tr>
             </thead>
 
-            <tbody>
+            {/* BODY */}
+            <tbody className="divide-y divide-gray-50">
               {comments.map((comment) => {
                 const isEditing = editingId === comment.id;
                 const text = isEditing ? draftComment : comment.body;
 
                 return (
-                  <tr key={comment.id} className="border-t">
+                  <tr key={comment.id} className="hover:bg-gray-50 transition">
 
-                    <td className="p-3 flex gap-2 items-center">
-                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                        {getInitials(comment.user.username)}
+                    {/* USER */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-semibold">
+                          {getInitials(comment.user.username)}
+                        </div>
+                        <span className="text-gray-700 font-medium">
+                          {comment.user.username}
+                        </span>
                       </div>
-                      {comment.user.username}
                     </td>
 
-                    <td className="p-3">
+                    {/* COMMENT */}
+                    <td className="px-6 py-4 text-gray-500">
                       {isEditing ? (
                         <textarea
                           value={draftComment}
                           onChange={(e) => setDraftComment(e.target.value)}
-                          className="border p-2 w-full"
+                          className="w-full border border-gray-200 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-green-500"
                         />
                       ) : (
-                        text
+                        <span className="line-clamp-2">{text}</span>
                       )}
                     </td>
 
-                    <td className="p-3">#{comment.postId}</td>
+                    {/* POST */}
+                    <td className="px-6 py-4 text-gray-500">
+                      #{comment.postId}
+                    </td>
 
-                    <td className="p-3">{getWordCount(text)}</td>
-               <td className="p-4 text-right">
-  <div className="inline-flex items-center gap-3">
-    {isEditing ? (
-      <>
-        <button
-          onClick={() => handleSaveEdit(comment.id)}
-          className="bg-green-500 text-white px-2 py-1"
-        >
-          Save
-        </button>
-        <button
-          onClick={handleCancelEdit}
-          className="bg-gray-400 text-white px-2 py-1"
-        >
-          Cancel
-        </button>
-      </>
-    ) : (
-      <>
-        <button
-          onClick={() => handleEdit(comment)}
-          className="bg-green-500 text-white px-2 py-1"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => handleDelete(comment.id)}
-          className="bg-green-500 text-white px-2 py-1"
-        >
-          Delete
-        </button>
-      </>
-    )}
-  </div>
-</td>
+                    {/* WORD COUNT */}
+                    <td className="px-6 py-4 text-gray-500">
+                      {getWordCount(text)}
+                    </td>
+
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end items-center gap-3">
+
+                        {isEditing ? (
+                          <>
+                            <button
+                              onClick={() => handleSaveEdit(comment.id)}
+                              className="bg-[#166534] hover:bg-[#14532d] text-white text-xs px-4 py-1.5 rounded-md border border-[#166534] transition"
+                            >
+                              Save
+                            </button>
+
+                            <button
+                              onClick={handleCancelEdit}
+                              className="border border-gray-300 text-gray-600 hover:bg-gray-100 text-xs px-4 py-1.5 rounded-md transition"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleEdit(comment)}
+                              className="border border-[#166534] text-[#166534] hover:bg-[#166534] hover:text-white text-xs px-4 py-1.5 rounded-md transition"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              onClick={() => handleDelete(comment.id)}
+                              className="border border-[#166534] text-[#166534] hover:bg-[#166534] hover:text-white text-xs px-4 py-1.5 rounded-md transition"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+
+                      </div>
+                    </td>
+
                   </tr>
                 );
               })}
