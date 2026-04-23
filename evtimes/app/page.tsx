@@ -279,19 +279,6 @@ function Home() {
 
             <div className="hidden justify-self-end md:block">
               <div className="flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
-                >
-                  Signup
-                </Link>
-
                 {sessionUser ? (
                   <div ref={accountMenuRef} className="relative">
                     <button
@@ -299,7 +286,7 @@ function Home() {
                       onClick={() => setIsAccountMenuOpen((current) => !current)}
                       className="rounded bg-[var(--grn)] px-4 py-2 text-xs font-medium text-white hover:bg-[var(--grn-acc)]"
                     >
-                      {sessionUser.name.split(" ")[0] || "My Account"}
+                      My Profile
                     </button>
 
                     {isAccountMenuOpen ? (
@@ -336,7 +323,22 @@ function Home() {
                       </div>
                     ) : null}
                   </div>
-                ) : null}
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="rounded border border-[var(--brd-dark)] px-4 py-2 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="rounded bg-[var(--grn)] px-5 py-2 text-xs text-white hover:bg-[var(--grn-acc)]"
+                    >
+                      Signup
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
@@ -365,23 +367,6 @@ function Home() {
                     {item}
                   </a>
                 ))}
-              </div>
-
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="flex-1 rounded border border-[var(--brd-dark)] px-4 py-2 text-center text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="flex-1 rounded bg-[var(--grn)] px-4 py-2 text-center text-xs text-white hover:bg-[var(--grn-acc)]"
-                >
-                  Signup
-                </Link>
               </div>
 
               {sessionUser ? (
@@ -415,7 +400,24 @@ function Home() {
                     </button>
                   </div>
                 </div>
-              ) : null}
+              ) : (
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className="flex-1 rounded border border-[var(--brd-dark)] px-4 py-2 text-center text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className="flex-1 rounded bg-[var(--grn)] px-4 py-2 text-center text-xs text-white hover:bg-[var(--grn-acc)]"
+                  >
+                    Signup
+                  </Link>
+                </div>
+              )}
             </div>
           ) : null}
         </nav>
