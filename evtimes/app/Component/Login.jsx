@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { saveSessionUser } from "../lib/mockAuth";
 
 function Login() {
   const router = useRouter();
@@ -49,7 +50,6 @@ function Login() {
           password: form.password,
         }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -60,6 +60,10 @@ function Login() {
       //  TOKEN SAVE
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      saveSessionUser({
+        name: data.user?.name ?? "",
+        email: data.user?.email ?? "",
+      });
 
       setSuccess(`Welcome back, ${data.user.name} `);
 
@@ -73,7 +77,7 @@ function Login() {
       } else {
         router.replace("/");
       }
-    } catch (error) {
+    } catch {
       setError("Server error");
     } finally {
       setIsSubmitting(false);
@@ -118,7 +122,7 @@ function Login() {
         </form>
 
         <p className="mt-4 text-center">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/signup" className="text-green-600">
             Signup
           </Link>

@@ -57,7 +57,7 @@ export default function UsersView() {
 
   const handleStatusToggle = async (userId: string, currentStatus: string) => {
     if (currentUserRole !== "super_admin") return alert("Only Super Admin can change status ❌");
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const newStatus = currentStatus === "active" ? "blocked" : "active";
     try {
       await changeUserStatus(userId, newStatus);
       setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, status: newStatus } : u)));
