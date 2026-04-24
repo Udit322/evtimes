@@ -1,20 +1,19 @@
 import News from "@/server/model/NewsModel/news.model";
-import User from "@/server/model/UserModel/user.model"
 // CREATE
 export const createNews = async (data) => {
   return await News.create(data);
 };
 
 // GET ALL (with filters)
-export const getAllNewswithFilters = async (filter = {}, options = {}) => {
+export const getAllNewswithFilters = async (filter = {}) => {
   return await News.find(filter)
-    .populate("author", "username email")
+    .populate("author", "name email profileImage")
     .sort({ createdAt: -1 });
 };
 
-export const getAllNews = async () => {
-  return await News.find()
-    .populate("author", "username email")
+export const getAllNews = async (filter ={}) => {
+  return await News.find(filter)
+    .populate("author", "name email profileImage")
     .sort({ createdAt: -1 });
 };
 
@@ -22,7 +21,7 @@ export const getAllNews = async () => {
 // GET BY SLUG
 export const getNewsBySlug = async (slug) => {
   return await News.findOne({ slug })
-    .populate("author", "username email");
+    .populate("author", "name email profileImage");
 };
 
 // UPDATE
@@ -68,7 +67,7 @@ export const toggleLike = async (newsId, userId) => {
 };
 
 
-export const changeNewsStatus = async (newsId, status, user) => {
+export const changeNewsStatus = async (newsId, status) => {
   const existingNews = await News.findById(newsId);
 
   if (!existingNews) {

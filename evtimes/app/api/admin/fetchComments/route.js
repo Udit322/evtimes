@@ -1,4 +1,4 @@
-import { fetchAllComments } from "../../../../server/controller/comment.controller/comment.controller";
+import { fetchAllComments } from "@/server/controller/comment.controller/comment.controller";
 import { authMiddleware } from "@/server/middleware/auth.middleware";
 import { adminMiddleware } from "@/server/middleware/admin.middleware";
 import { compose } from "@/server/middleware/compose";
