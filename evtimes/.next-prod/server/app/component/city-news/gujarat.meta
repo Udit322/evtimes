@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/component/layout,_N_T_/component/city-news/layout,_N_T_/component/city-news/[slug]/layout,_N_T_/component/city-news/[slug]/page,_N_T_/component/city-news/gujarat"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/component/city-news/$d$slug/__PAGE__",
+    "/component/city-news/$d$slug",
+    "/component/city-news",
+    "/component",
+    "/_index",
+    "/_head"
+  ]
+}

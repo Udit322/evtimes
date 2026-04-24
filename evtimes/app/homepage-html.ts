@@ -32,8 +32,7 @@ export const homepageHtml = String.raw`<!-- TICKER -->
     <li><a href="#">Market</a></li>
   </ul>
   <div class="nav-right">
-    <a href="/sign-in" class="btn-ghost">Sign in</a>
-    <a href="/subscribe" class="btn-green">Subscribe</a>
+    <a href="/login" class="btn-ghost">Log in</a>
   </div>
 </nav>
 

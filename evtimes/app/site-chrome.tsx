@@ -27,12 +27,10 @@ export function SiteHeader() {
         </li>
       </ul>
       <div className="nav-right">
-        <Link href="/sign-in" className="btn-ghost">
-          Sign in
+        <Link href="/login" className="btn-ghost">
+          login
         </Link>
-        <Link href="/subscribe" className="btn-green">
-          Subscribe
-        </Link>
+        
       </div>
     </nav>
   );
@@ -98,6 +96,17 @@ export function SiteFooter() {
             <li><Link href="#">Newsletter Archive</Link></li>
           </ul>
         </div>
+        <div className="footer-col">
+          <h4>State</h4>
+         <ul>
+      <li><a href="#">Rajasthan</a></li>
+      <li><a href="#">Uttar pradesh</a></li>
+      <li><a href="#">Haryana</a></li>
+      <li><a href="#">Punjab</a></li>
+      <li><a href="#">Maharashtra</a></li>
+      <li><a href="#">Gujarat</a></li>
+      </ul>
+       </div>
       </div>
 
       <footer className="bottom">

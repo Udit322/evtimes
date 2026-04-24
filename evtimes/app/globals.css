@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 
 *,
@@ -1205,7 +1205,7 @@ nav {
 }
 
 .data-bar-wrap {
-  padding: 20px 48px;
+  padding: 60px 70px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1648,7 +1648,11 @@ nav {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 32px 20px;
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  padding:  70px,80px;
   background:
     radial-gradient(circle at top right, rgba(151, 196, 89, 0.18), transparent 30%),
     linear-gradient(180deg, #f7fbe9 0%, #edf4dc 100%);
@@ -1660,10 +1664,10 @@ nav {
 }
 
 .auth-panel {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(146, 74, 74, 0.94);
   border: 1px solid rgba(15, 26, 6, 0.08);
   border-radius: 28px;
-  padding: 36px 30px;
+  padding: 50px 60px;
   box-shadow: 0 18px 60px rgba(27, 61, 12, 0.08);
 }
 
@@ -1693,7 +1697,7 @@ nav {
   width: 100%;
   border: 1px solid var(--brd-dark);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 20px 30px;
   font-size: 14px;
   color: var(--txt);
   background: #fff;
@@ -1707,7 +1711,7 @@ nav {
 .auth-submit {
   border: none;
   border-radius: 14px;
-  padding: 14px 18px;
+  padding: 20px 30px;
   background: var(--grn);
   color: #fff;
   font-size: 15px;
@@ -1718,4 +1722,97 @@ nav {
 
 .auth-submit:hover {
   background: var(--grn-acc);
+}
+
+/* पूरे page को center और space देने के लिए */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* Login container */
+.login-container {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px; /* outer spacing */
+  box-sizing: border-box;
+}
+
+/* Login box */
+.login-box {
+  background: white;
+  padding: 30px; /* अंदर space */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+  width: 300px;
+}
+
+/* Inputs */
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px; /* inputs के बीच space */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Button */
+.login-box button {
+  width: 100%;
+  padding: 10px;
+  background-color: light rgb(60, 157, 60);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-box button:hover {
+  background-color: rgb(60, 157, 68);
+}
+.article-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* LEFT SIDE IMAGE */
+.article-image {
+  flex: 1;
+}
+
+.article-image img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* RIGHT SIDE CONTENT */
+.article-content {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TITLE */
+.article-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* CONTENT TEXT */
+.article-content p {
+  font-size: 16px;
+  line-height: 1.6;
 }

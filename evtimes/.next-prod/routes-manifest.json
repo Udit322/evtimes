@@ -1,0 +1,250 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/batterytech/[slug]",
+      "regex": "^/batterytech/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/batterytech/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/charging/[slug]",
+      "regex": "^/charging/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/charging/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/city-news/[slug]",
+      "regex": "^/city\\-news/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/city\\-news/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/component/city-news/[slug]",
+      "regex": "^/component/city\\-news/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/component/city\\-news/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/market/[slug]",
+      "regex": "^/market/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/market/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/policy/[slug]",
+      "regex": "^/policy/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/policy/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/startup/[slug]",
+      "regex": "^/startup/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/startup/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/vehicles/[slug]",
+      "regex": "^/vehicles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/vehicles/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[slug]",
+      "regex": "^/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/(?<nxtPslug>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/batterytech",
+      "regex": "^/batterytech(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/batterytech(?:/)?$"
+    },
+    {
+      "page": "/charging",
+      "regex": "^/charging(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/charging(?:/)?$"
+    },
+    {
+      "page": "/city-news",
+      "regex": "^/city\\-news(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/city\\-news(?:/)?$"
+    },
+    {
+      "page": "/component",
+      "regex": "^/component(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/component(?:/)?$"
+    },
+    {
+      "page": "/component/city-news",
+      "regex": "^/component/city\\-news(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/component/city\\-news(?:/)?$"
+    },
+    {
+      "page": "/dashboard",
+      "regex": "^/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard(?:/)?$"
+    },
+    {
+      "page": "/dashboard/comments",
+      "regex": "^/dashboard/comments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/comments(?:/)?$"
+    },
+    {
+      "page": "/dashboard/news",
+      "regex": "^/dashboard/news(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/news(?:/)?$"
+    },
+    {
+      "page": "/dashboard/superadmin",
+      "regex": "^/dashboard/superadmin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/superadmin(?:/)?$"
+    },
+    {
+      "page": "/dashboard/users",
+      "regex": "^/dashboard/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/users(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/lib/login",
+      "regex": "^/lib/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/lib/login(?:/)?$"
+    },
+    {
+      "page": "/lib/signup",
+      "regex": "^/lib/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/lib/signup(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/market",
+      "regex": "^/market(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/market(?:/)?$"
+    },
+    {
+      "page": "/policy",
+      "regex": "^/policy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policy(?:/)?$"
+    },
+    {
+      "page": "/signup",
+      "regex": "^/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/signup(?:/)?$"
+    },
+    {
+      "page": "/startup",
+      "regex": "^/startup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/startup(?:/)?$"
+    },
+    {
+      "page": "/vehicles",
+      "regex": "^/vehicles(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vehicles(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[97367,["/_next/static/chunks/16ty2921ivfs3.js","/_next/static/chunks/0n4z.7yu76je-.js"],"ViewportBoundary"]
+3:I[97367,["/_next/static/chunks/16ty2921ivfs3.js","/_next/static/chunks/0n4z.7yu76je-.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[27201,["/_next/static/chunks/16ty2921ivfs3.js","/_next/static/chunks/0n4z.7yu76je-.js"],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Mahindra BE.07 first drive: Bold, brash, and the most range we've tested in India | EVTimes"}],["$","meta","1",{"name":"description","content":"At 683km ARAI, the BE.07 rewrites the range narrative. But it's the driving dynamics and software that truly set it apart from the Nexon EV."}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.0x3dzn~oxb6tn.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L5","3",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"kbpORJnXgn6xFTnVFP0uP"}
