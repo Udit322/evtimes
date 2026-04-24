@@ -33,7 +33,7 @@ const summaryCards = [
     title: "Comment Reports",
     value: "17",
     note: "Moderation flags dropped compared to yesterday",
-    delta: "–2",
+    delta: "â€“2",
     deltaType: "alert",
     icon: "alert",
   },
@@ -122,7 +122,7 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-/* ─── Inline SVG icons ─── */
+/* â”€â”€â”€ Inline SVG icons â”€â”€â”€ */
 function IconStory() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -188,7 +188,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard-home">
 
-      {/* ── Summary cards ── */}
+      {/* â”€â”€ Summary cards â”€â”€ */}
       <section className="cards">
         {summaryCards.map((card) => (
           <article key={card.title} className="card">
@@ -209,7 +209,7 @@ export default function Dashboard() {
         ))}
       </section>
 
-      {/* ── Activity + Queue ── */}
+      {/* â”€â”€ Activity + Queue â”€â”€ */}
       <section className="dashboard-overview-grid">
         <article className="dashboard-panel">
           <div className="dashboard-panel-head">
@@ -265,7 +265,7 @@ export default function Dashboard() {
         </aside>
       </section>
 
-      {/* ── Desk health + Team ── */}
+      {/* â”€â”€ Desk health + Team â”€â”€ */}
       <section className="dashboard-bottom-grid">
         <article className="dashboard-panel dashboard-performance-panel">
           <div className="dashboard-panel-head">

@@ -109,8 +109,6 @@ export const loginUser = async (data) => {
 
   const token = generateToken(user._id.toString(), user.role);
 
-  const { password: _, ...safeUser } = user;
-
 // return {
 //   message: "Login successful",
 //   token,
@@ -178,3 +176,60 @@ export const findUserByIdHandler = async (userId) => {
   }
   return user;
 }
+
+export const updateUserProfile = async (userId, data, actorRole) => {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
+  const name = data?.name?.trim();
+  const email = data?.email?.trim().toLowerCase();
+
+  if (!name || !email) {
+    throw new Error("Name and email are required");
+  }
+
+  if (!validateEmail(email)) {
+    throw new Error("Invalid email");
+  }
+
+  const existingUser = await findUserByEmail(email);
+
+  if (existingUser && existingUser._id.toString() !== userId) {
+    throw new Error("Email already exists");
+  }
+
+  const updateData = {
+    name,
+    email,
+    phone: data?.phone?.trim() || "",
+    location: data?.location?.trim() || "",
+    department: data?.department?.trim() || "",
+    bio: data?.bio?.trim() || "",
+  };
+
+  if (actorRole === "super_admin") {
+    const allowedRoles = ["user", "staff", "super_admin"];
+    const allowedStatuses = ["active", "blocked"];
+    const nextRole = data?.role?.trim();
+    const nextStatus = data?.status?.trim().toLowerCase();
+
+    if (nextRole) {
+      if (!allowedRoles.includes(nextRole)) {
+        throw new Error("Invalid role");
+      }
+      updateData.role = nextRole;
+    }
+
+    if (nextStatus) {
+      if (!allowedStatuses.includes(nextStatus)) {
+        throw new Error("Invalid status");
+      }
+      updateData.status = nextStatus;
+    }
+  }
+
+  return await updateById(userId, {
+    ...updateData,
+  });
+};

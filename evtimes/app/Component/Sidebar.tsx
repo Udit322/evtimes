@@ -24,7 +24,7 @@ type SidebarProps = {
   isMobile: boolean;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
-  onToggleCollapse: () => void; // ← नया prop
+  onToggleCollapse: () => void;
 };
 
 function DashboardIcon({ className }: IconProps) {
@@ -94,12 +94,17 @@ function LogoutIcon({ className }: IconProps) {
   );
 }
 
-// Collapse arrow icon
 function CollapseIcon({ collapsed }: { collapsed: boolean }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.2"
-      strokeLinecap="round" strokeLinejoin="round"
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       style={{ transition: "transform 0.24s ease", transform: collapsed ? "rotate(180deg)" : "rotate(0deg)" }}
     >
       <polyline points="15 18 9 12 15 6" />
@@ -115,11 +120,11 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: "Workspace",
+    label: "",
     items: [
       { href: "/dashboard/news", label: "News", icon: NewsIcon },
+       { href: "/dashboard/posts", label: "Add Posts", icon: PostsIcon },
       { href: "/dashboard/comments", label: "Comments", icon: CommentsIcon },
-      { href: "/dashboard/posts", label: "Posts", icon: PostsIcon },
       { href: "/dashboard/users", label: "Users", icon: UsersIcon },
     ],
   },
@@ -134,12 +139,12 @@ export default function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-   const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (!isMobileOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseMobile();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCloseMobile();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -148,7 +153,9 @@ export default function Sidebar({
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
-  const handleNavigate = () => { if (isMobile) onCloseMobile(); };
+  const handleNavigate = () => {
+    if (isMobile) onCloseMobile();
+  };
 
   const handleLogout = async () => {
     try {
@@ -159,14 +166,12 @@ export default function Sidebar({
       console.error("Logout API failed", error);
     }
 
-    // local cleanup
-    clearSessionUser()
+    clearSessionUser();
     onCloseMobile();
-    router.push("/");//To Consider
+    router.push("/");
   };
 
   return (
-
     <>
       <button
         type="button"
@@ -182,8 +187,6 @@ export default function Sidebar({
         <div className="dashboard-sidebar">
           <div className="dashboard-sidebar-top">
             <div className="dashboard-sidebar-head">
-
-              {/* Brand */}
               <div className="dashboard-sidebar-brand">
                 <div className="dashboard-brand-mark">
                   <span className="dashboard-brand-mark-word">EVTimes</span>
@@ -193,7 +196,6 @@ export default function Sidebar({
                 </div>
               </div>
 
-              {/* Desktop collapse button — mobile पर hidden */}
               {!isMobile && (
                 <button
                   type="button"
@@ -206,7 +208,6 @@ export default function Sidebar({
                 </button>
               )}
 
-              {/* Mobile close button */}
               {isMobile && (
                 <button
                   type="button"
@@ -221,9 +222,11 @@ export default function Sidebar({
           </div>
 
           <div className="dashboard-sidebar-sections">
-            {navSections.map((section) => (
-              <div key={section.label} className="dashboard-sidebar-section">
-                <p className="dashboard-sidebar-label">{section.label}</p>
+            {navSections.map((section, index) => (
+              <div key={`${section.label}-${index}`} className="dashboard-sidebar-section">
+                {section.label ? (
+                  <p className="dashboard-sidebar-label">{section.label}</p>
+                ) : null}
                 <nav className="dashboard-sidebar-nav">
                   {section.items.map((item) => {
                     const active = isActive(item.href);
@@ -251,11 +254,11 @@ export default function Sidebar({
             ))}
           </div>
 
-           <div className="dashboard-sidebar-footer">
+          <div className="dashboard-sidebar-footer">
             <button
               type="button"
               className="dashboard-logout-button"
-              onClick={() => setShowConfirm(true)}   // ✅ changed
+              onClick={() => setShowConfirm(true)}
             >
               <LogoutIcon className="dashboard-logout-icon" />
               <span>Logout</span>
@@ -263,8 +266,6 @@ export default function Sidebar({
           </div>
         </div>
       </aside>
-
-
 
       <Confirmation
         isOpen={showConfirm}
@@ -275,7 +276,5 @@ export default function Sidebar({
         }}
       />
     </>
-
-   
   );
 }
