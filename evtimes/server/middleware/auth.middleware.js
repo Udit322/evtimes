@@ -22,7 +22,7 @@ export const authMiddleware = async (req, context, next) => {
 
     context.user = decoded;
 
-    return next();
+    return next(context);
   } catch (error) {
     return NextResponse.json(
       { message: "Invalid token" },

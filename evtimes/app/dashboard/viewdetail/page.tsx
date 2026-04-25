@@ -27,7 +27,6 @@ function formatDate(date?: string) {
 
   });
 }
-
 function getAuthorInitials(name?: string, email?: string) {
   const source = name?.trim() || email?.trim() || "User";
 
@@ -46,6 +45,7 @@ export default function ViewNews() {
   const [news, setNews] = useState<NewsDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isAuthorModalOpen, setIsAuthorModalOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) {
@@ -99,6 +99,10 @@ export default function ViewNews() {
     return <p className="p-6 text-sm text-gray-500">No news found.</p>;
   }
 
+  const authorName = news.author?.name || "Unknown";
+  const authorEmail = news.author?.email || "Email not available";
+  const authorInitials = getAuthorInitials(news.author?.name, news.author?.email);
+
   return (
     <main className="min-h-screen bg-gray-50 p-4 sm:p-6">
       <div className="mx-auto w-full rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
@@ -141,24 +145,53 @@ export default function ViewNews() {
         </div>
 
         {/* USER */}
-        <div className="mb-6 flex items-center gap-4">
-          <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold">
-            {getAuthorInitials(news.author?.name, news.author?.email)}
-          </div>
+        <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-3 sm:p-4">
+          <button
+            type="button"
+            onClick={() => setIsAuthorModalOpen(true)}
+            className="flex min-w-0 items-center gap-4 text-left"
+          >
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-green-100 text-green-700 font-semibold">
+              {news.author?.profileImage ? (
+                <img
+                  src={news.author.profileImage}
+                  alt={authorName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                authorInitials
+              )}
+            </div>
 
-          <div>
-            <p className="text-sm font-semibold">{news.author?.name || "Unknown"}</p>
-            <p className="text-xs text-gray-500">{news.author?.email}</p>
-          </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-gray-900">{authorName}</p>
+              <p className="truncate text-xs text-gray-500">{authorEmail}</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsAuthorModalOpen(true)}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-700 transition hover:bg-green-100"
+            aria-label="Open author details"
+            title="Open author details"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8h.01" />
+              <path d="M11 12h1v4h1" />
+            </svg>
+          </button>
         </div>
 
-        {/* 🔥 SMALL IMAGE FIX */}
         {news.image ? (
-          <img
-            src={news.image}
-            alt="news"
-           className="w-full h-[10px] sm:h-[40px] md:h-[10px] rounded-xl  mb-1"
-          />
+          <div className="mx-auto mb-5 max-w-4xl overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+            <img
+              src={news.image}
+              alt={news.title || "news"}
+              className="h-[150px] w-full object-cover sm:h-[190px] md:h-[220px]"
+            />
+          </div>
         ) : null}
 
         {/* Description */}
@@ -174,6 +207,72 @@ export default function ViewNews() {
         </p>
 
       </div>
+
+      {isAuthorModalOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+          onClick={() => setIsAuthorModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-7"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-green-600">
+                  Author Detail
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-gray-900">
+                  {authorName}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsAuthorModalOpen(false)}
+                className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-6 flex items-center gap-4 rounded-2xl bg-gray-50 p-4">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-green-100 text-lg font-semibold text-green-700">
+                {news.author?.profileImage ? (
+                  <img
+                    src={news.author.profileImage}
+                    alt={authorName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  authorInitials
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <p className="truncate text-lg font-semibold text-gray-900">{authorName}</p>
+                <p className="truncate text-sm text-gray-500">{authorEmail}</p>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-3">
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">
+                  Name
+                </p>
+                <p className="mt-2 text-sm font-medium text-gray-800">{authorName}</p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">
+                  Email
+                </p>
+                <p className="mt-2 break-all text-sm font-medium text-gray-800">{authorEmail}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

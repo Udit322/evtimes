@@ -11,11 +11,6 @@ type HeaderProps = {
   onToggleSidebar: () => void;
 };
 
-const headerNavItems = [
-  { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
-];
-
 const pageMeta = [
   {
     match: (pathname: string) => pathname === "/dashboard",
@@ -94,13 +89,6 @@ export default function Header({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const isActive = (href: string) =>
-    href === "/"
-      ? pathname === href
-      : href === "/dashboard"
-      ? pathname === href
-      : pathname.startsWith(href);
-
   return (
     <header className="dashboard-topbar flex items-center justify-between px-4">
 
@@ -122,24 +110,6 @@ export default function Header({
 
       {/* RIGHT */}
       <div className="flex items-center gap-4">
-
-        {/* NAV LINKS */}
-        <nav className="flex gap-3">
-          {headerNavItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm transition ${
-                isActive(item.href)
-                  ? "font-semibold text-green-600"
-                  : "text-gray-500 hover:text-gray-800"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
         {/* PROFILE DROPDOWN */}
         {user && (
           <div ref={ref} className="relative">

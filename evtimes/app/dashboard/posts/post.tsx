@@ -29,7 +29,7 @@ function parseTags(tags: string[] | string | undefined): string[] {
       if (Array.isArray(parsed)) {
         return parsed.map((tag) => String(tag).trim()).filter(Boolean);
       }
-    } catch {}
+    } catch { }
 
     return tags
       .replace(/[\[\]"']/g, "")
@@ -71,6 +71,7 @@ export default function PostNews() {
   });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const loadPosts = async () => {
     try {
@@ -91,6 +92,9 @@ export default function PostNews() {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
 
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setImageFile(event.target.files?.[0] || null);
+  };
   const handleSubmit = async (status: "draft" | "published") => {
     if (!form.title.trim() || !form.description.trim() || !form.content.trim() || !form.category.trim()) {
       setMsg("Title, Description, Content and Category are required.");
@@ -101,19 +105,46 @@ export default function PostNews() {
       setLoading(true);
       setMsg("");
 
+      let imageUrl = form.image; // default (edit case)
+
+      // ✅ STEP 1: upload image (if file selected)
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("image", imageFile); // 🔥 IMPORTANT
+
+        const uploadRes = await fetch("/api/news/uploadCoverImage", {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadRes.ok) throw new Error(uploadData.error || "Image upload failed.");
+
+        imageUrl = uploadData.url; // ✅ URL from your API
+      }
+
+      // ✅ STEP 2: create/update post
       const isEdit = Boolean(editId);
-      const res = await fetch(isEdit ? `/api/news/updatee/${editId}` : "/api/news/createe", {
-        method: isEdit ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          status,
-          tags: form.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean),
-        }),
-      });
+
+      const res = await fetch(
+        isEdit ? `/api/news/updatee/${editId}` : "/api/news/createe",
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            ...form,
+            image: imageUrl, // 🔥 FINAL IMAGE URL
+            status,
+            tags: form.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean),
+          }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -136,6 +167,8 @@ export default function PostNews() {
         tags: "",
         image: "",
       });
+
+      setImageFile(null); // ✅ reset file
       setEditId(null);
       setShowForm(false);
       await loadPosts();
@@ -145,7 +178,6 @@ export default function PostNews() {
       setLoading(false);
     }
   };
-
   const handleEdit = (item: PostItem) => {
     setForm({
       title: item.title || "",
@@ -156,6 +188,7 @@ export default function PostNews() {
       image: item.image || "",
     });
     setEditId(item._id ?? null);
+    setImageFile(null);
     setShowForm(true);
   };
 
@@ -169,6 +202,7 @@ export default function PostNews() {
       tags: "",
       image: "",
     });
+    setImageFile(null);
     setMsg("");
     setShowForm(true);
   };
@@ -312,11 +346,10 @@ export default function PostNews() {
                       <h3 className="pn-title truncate text-[15px] font-bold text-slate-900">{item.title || "Untitled"}</h3>
                       {item.status ? (
                         <span
-                          className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                            item.status === "published"
-                              ? "border-emerald-200 bg-emerald-50 text-emerald-600"
-                              : "border-amber-200 bg-amber-50 text-amber-500"
-                          }`}
+                          className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${item.status === "published"
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                            : "border-amber-200 bg-amber-50 text-amber-500"
+                            }`}
                         >
                           {item.status}
                         </span>
@@ -418,7 +451,21 @@ export default function PostNews() {
                   />
                 </div>
 
-                <input name="image" value={form.image} onChange={handleChange} placeholder="Image URL" className={inputCls} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className={inputCls}
+                />
+                {imageFile ? (
+                  <p className="px-1 text-xs text-slate-500">
+                    Selected image: {imageFile.name}
+                  </p>
+                ) : form.image ? (
+                  <p className="px-1 text-xs text-slate-500">
+                    Current image will be kept if you do not choose a new file.
+                  </p>
+                ) : null}
                 <textarea
                   name="content"
                   value={form.content}
@@ -430,14 +477,13 @@ export default function PostNews() {
 
                 {msg ? (
                   <div
-                    className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${
-                      msg.toLowerCase().includes("success") ||
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${msg.toLowerCase().includes("success") ||
                       msg.toLowerCase().includes("published") ||
                       msg.toLowerCase().includes("saved") ||
                       msg.toLowerCase().includes("created")
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : "border-red-200 bg-red-50 text-red-600"
-                    }`}
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-red-200 bg-red-50 text-red-600"
+                      }`}
                   >
                     {msg}
                   </div>

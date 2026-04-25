@@ -88,13 +88,13 @@ export default function DashboardLayout({
         ${isMobileSidebarOpen ? "is-mobile-sidebar-open" : ""}
       `}
     >
-      {/* ✅ FIX ADDED HERE */}
+     
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         isMobile={isMobileViewport}
         isMobileOpen={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
-        onToggleCollapse={handleToggleSidebar}   // 🔥 THIS LINE FIXES EVERYTHING
+        onToggleCollapse={handleToggleSidebar}   
       />
 
       <div className="dashboard-main">
