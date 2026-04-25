@@ -1,4 +1,4 @@
-import { writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
 import { authMiddleware } from "@/server/middleware/auth.middleware";
@@ -74,11 +74,12 @@ export async function POST(req) {
     const uploadDir = path.join(process.cwd(), "public/newsCoverImages");
     const filePath = path.join(uploadDir, fileName);
 
-    //  Save file
+    await mkdir(uploadDir, { recursive: true });
+
     await writeFile(filePath, buffer);
 
     //  Public URL
-    const fileUrl = `/uploads/${fileName}`;
+    const fileUrl = `/newsCoverImages/${fileName}`;
 
     return NextResponse.json({
       success: true,

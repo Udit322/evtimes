@@ -251,7 +251,7 @@ export default function UsersView() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setSelectedUser(user)}
-                        className="rounded-lg bg-green-700 px-4 py-1.5 text-xs font-medium text-white transition-colors "
+                        className="rounded-lg bg-green-700 px-3 py-1.5 text-xs font-medium text-white transition-colors "
                       >
                         View Detail
                       </button>

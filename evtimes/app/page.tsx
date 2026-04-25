@@ -1,7 +1,12 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  coverStoryArticle,
+  homepageHeroCards as heroCards,
+  homepageStories as stories,
+} from "./lib/homepageArticles";
 import { clearSessionUser, getSessionUser, subscribeToSessionChange } from "./lib/mockAuth";
 import { stateNews } from "./lib/stateNews";
 
@@ -28,93 +33,7 @@ const categories = [
   "India",
   "Global",
 ];
-
 const navItems = ["Vehicles", "Charging", "Policy", "Battery Tech", "Startups", "Market"];
-
-const heroCards = [
-  {
-    tag: "Market - India",
-    title:
-      "March 2025 EV report: India crosses 200,000 monthly units for the first time - a milestone five years in the making",
-    excerpt:
-      "Passenger EVs, two-wheelers, and commercial vehicles all posted record numbers this March. We examine what drove the surge and whether it's sustainable.",
-    meta: "Data Desk - 9 min - 1 day ago",
-    large: true,
-  },
-  {
-    tag: "Battery - Research",
-    title:
-      "Solid-state batteries are coming to India sooner than expected - Tata's R&D chief speaks",
-    excerpt:
-      "An exclusive conversation on the 2027 timeline, cell chemistry choices, and why India's heat conditions require a unique approach.",
-    meta: "Rajan Verma - 7 min - 2 days ago",
-    large: false,
-  },
-  {
-    tag: "Charging - Infra",
-    title: "How Charge Zone plans to deploy 10,000 DCFC stations by 2026",
-    excerpt:
-      "The startup's blueprint: highways first, then Tier 2 cities, then apartments. We map out the strategy and the funding behind it.",
-    meta: "Ananya Singh - 5 min - 3 days ago",
-    large: false,
-  },
-];
-
-const stories = [
-  {
-    tag: "Battery Tech - India",
-    title:
-      "LFP vs NMC: Why Indian OEMs are betting on iron-phosphate chemistry despite the range trade-off",
-    excerpt:
-      "Tata, MG, and BYD have all standardised on LFP for their Indian lineup. We break down the thermal, cost, and longevity reasons behind this shift.",
-    meta: "Rajan Verma - 8 min - Yesterday",
-    icon: "B",
-  },
-  {
-    tag: "Charging Infra - Analysis",
-    title:
-      "India's DC fast charger rollout is stalling - and the culprit is land, not money",
-    excerpt:
-      "Despite aggressive targets, DCFC deployment is running at 40% of planned pace. We investigated 6 months of tender data across 12 states.",
-    meta: "Ananya Singh - 11 min - 2 days ago",
-    icon: "C",
-  },
-  {
-    tag: "Two-Wheelers - Review",
-    title:
-      "Ather Rizta review: The family scooter that finally makes electric practical for Tier 2 cities",
-    excerpt:
-      "After 1,200km across Jaipur, Kota, and Ajmer - a real-world verdict on range anxiety, service access, and running costs.",
-    meta: "Kavya Nair - 14 min - 3 days ago",
-    icon: "S",
-  },
-  {
-    tag: "Market - Data",
-    title: "March 2025 EV sales data: Tata dominates, Mahindra surges, Ola slips",
-    excerpt:
-      "Full breakdown of monthly registration data across categories - with segment-wise growth rates and market share shifts since Q4 2024.",
-    meta: "Data Desk - 5 min - 4 days ago",
-    icon: "D",
-  },
-  {
-    tag: "Policy - Startup",
-    title:
-      "PLI 2.0 for Advanced Chemistry Cells: What the revised targets mean for battery startups",
-    excerpt:
-      "The government's revised PLI scheme raises the performance bar for cell manufacturers. We speak to three startups navigating the new landscape.",
-    meta: "Kiran Bhat - 10 min - 5 days ago",
-    icon: "P",
-  },
-  {
-    tag: "Passenger EVs - Launch",
-    title:
-      "Mahindra BE.07 first drive: Bold, brash, and the most range we've tested in India",
-    excerpt:
-      "At 683km ARAI, the BE.07 rewrites the range narrative. But it's the driving dynamics and software that truly set it apart from the Nexon EV.",
-    meta: "Meera Pillai - 12 min - 6 days ago",
-    icon: "E",
-  },
-];
 
 const sales = [
   { brand: "Tata Motors", value: "18,240", change: "+12.4%", up: true, share: "41.2%", width: 82 },
@@ -217,7 +136,10 @@ type SessionUser = {
 };
 
 function Home() {
+  const initialStoryCount = 6;
+  const storiesPerLoad = 3;
   const [activeCategory, setActiveCategory] = useState("All");
+  const [visibleStoriesCount, setVisibleStoriesCount] = useState(initialStoryCount);
   const [email, setEmail] = useState("");
   const [newsletterState, setNewsletterState] = useState<"idle" | "error" | "subscribed">("idle");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
@@ -256,6 +178,9 @@ function Home() {
     setIsMobileNavOpen(false);
   };
 
+  const visibleStories = stories.slice(0, visibleStoriesCount);
+  const hasMoreStories = visibleStoriesCount < stories.length;
+
   return (
     <>
       <main className="min-h-screen overflow-x-hidden bg-[var(--wh)] text-[var(--txt)]">
@@ -269,9 +194,21 @@ function Home() {
               <ul className="flex gap-8">
                 {navItems.map((item) => (
                   <li key={item}>
-                    <a href="#" className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:text-[var(--grn)]">
-                      {item}
-                    </a>
+                    {item === "Vehicles" ? (
+                      <Link
+                        href="/vehicle"
+                        className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:text-[var(--grn)]"
+                      >
+                        {item}
+                      </Link>
+                    ) : (
+                      <a
+                        href="#"
+                        className="text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:text-[var(--grn)]"
+                      >
+                        {item}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -357,16 +294,27 @@ function Home() {
           {isMobileNavOpen ? (
             <div className="mt-4 space-y-4 border-t border-[var(--brd)] pt-4 md:hidden">
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {navItems.map((item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    onClick={() => setIsMobileNavOpen(false)}
-                    className="rounded-lg border border-[var(--brd)] bg-[var(--gry)] px-3 py-2 text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
-                  >
-                    {item}
-                  </a>
-                ))}
+                {navItems.map((item) =>
+                  item === "Vehicles" ? (
+                    <Link
+                      key={item}
+                      href="/vehicle"
+                      onClick={() => setIsMobileNavOpen(false)}
+                      className="rounded-lg border border-[var(--brd)] bg-[var(--gry)] px-3 py-2 text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                    >
+                      {item}
+                    </Link>
+                  ) : (
+                    <a
+                      key={item}
+                      href="#"
+                      onClick={() => setIsMobileNavOpen(false)}
+                      className="rounded-lg border border-[var(--brd)] bg-[var(--gry)] px-3 py-2 text-xs font-medium uppercase tracking-[0.05em] text-[var(--txt2)] hover:bg-[var(--grn-xlight)] hover:text-[var(--grn-dark)]"
+                    >
+                      {item}
+                    </a>
+                  )
+                )}
               </div>
 
               {sessionUser ? (
@@ -433,8 +381,7 @@ function Home() {
             </a>
           </span>
         </div>
-
-        <div className="ticker-shell border-b border-[var(--brd-dark)] bg-[var(--blk)] text-white">
+        <div className="ticker-shell border-b border-[var(--brd-dark-green)] bg-[var(--blk)] text-white">
           <div className="flex items-center">
             <div className="shrink-0 bg-[var(--grn)] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white md:px-5">
               News Flash
@@ -463,27 +410,24 @@ function Home() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_90%,rgba(45,122,31,0.05)_0%,transparent_60%)]" />
             <div className="relative">
               <div className="inline-flex rounded border border-[var(--brd-dark)] bg-[var(--grn-xlight)] px-3 py-1 text-[11px] uppercase tracking-[0.08em] text-[var(--grn-acc)]">
-                Policy - Analysis
+                {coverStoryArticle.tag}
               </div>
               <h1 className="mt-6  text-[10px] leading-[1.12] text-[var(--blk)] sm:text-[4px] md:text-[35px]">
                 India&apos;s <em className="text-[var(--grn)]">FAME III</em> subsidy scheme could reshape the EV market - here&apos;s what we know
               </h1>
               <p className="mt-8 max-w-2xl text-sm leading-7 text-[var(--txt2)]">
-                The government is expected to announce a revised subsidy structure that extends support to private four-wheelers for the first time, potentially unlocking demand from a segment that has remained price-sensitive. We break down the policy framework, winners, and what it means for OEMs.
+                {coverStoryArticle.excerpt}
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-3 text-xs text-[var(--txt3)]">
-                <span className="font-medium text-[var(--blk)]">Priya Mehta</span>
+                <span className="font-medium text-[var(--blk)]">{coverStoryArticle.author}</span>
                 <span className="h-1 w-1 rounded-full bg-[var(--grn-mid)]" />
-                <span>6 min read</span>
+                <span>{coverStoryArticle.readTime}</span>
                 <span className="h-1 w-1 rounded-full bg-[var(--grn-mid)]" />
-                <span>2 hours ago</span>
+                <span>{coverStoryArticle.publishedAt}</span>
               </div>
-              <Link
-                href="/signup"
-                className="mt-6 inline-block rounded bg-[var(--grn)] px-6 py-3 text-sm text-white hover:bg-[var(--grn-acc)]"
-              >
-                Read article -&gt;
-              </Link>
+              <span className="mt-6 inline-block rounded border border-[var(--brd-dark green)]  px-6 py-3 text-sm text-[var(--grn)]">
+                Read Article
+              </span>
             </div>
           </div>
           <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden bg-[var(--grn-xlight)]">
@@ -499,14 +443,18 @@ function Home() {
 
         <section className="grid border-b border-[var(--brd)] lg:grid-cols-[2fr_1fr_1fr]">
           {heroCards.map((item) => (
-            <a key={item.title} href="#" className="border-b border-[var(--brd)] px-6 py-8 transition hover:bg-[var(--grn-xlight)] last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 md:px-9">
+            <Link
+              key={item.slug}
+              href={`/news/${item.slug}`}
+              className="border-b border-[var(--brd)] px-6 py-8 transition hover:bg-[var(--grn-xlight)] last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 md:px-9"
+            >
               <div className="text-[10px] uppercase tracking-[0.08em] text-[var(--grn)]">{item.tag}</div>
               <h2 className={`mt-3 font-['Instrument_Serif'] text-[var(--blk)] ${item.large ? "text-[28px] leading-[1.2]" : "text-[20px] leading-[1.3]"}`}>
                 {item.title}
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--txt2)]">{item.excerpt}</p>
               <p className="mt-3 text-xs text-[var(--txt3)]">{item.meta}</p>
-            </a>
+            </Link>
           ))}
         </section>
 
@@ -534,10 +482,10 @@ function Home() {
                 <option>Trending</option>
               </select>
             </div>
-            {stories.map((story) => (
-              <a
-                key={story.title}
-                href="#"
+            {visibleStories.map((story) => (
+              <Link
+                key={story.slug}
+                href={`/news/${story.slug}`}
                 className="grid gap-5 border-b border-[var(--brd)] px-6 py-7 transition hover:bg-[var(--grn-xlight)] md:grid-cols-[minmax(0,1fr)_120px] md:px-12"
               >
                 <div>
@@ -549,11 +497,23 @@ function Home() {
                 <div className="flex h-[80px] w-[96px] items-center justify-center rounded border border-[var(--brd)] bg-[var(--grn-xlight)] font-['Bebas_Neue'] text-4xl text-[var(--grn-dark)] sm:h-[90px] sm:w-[120px]">
                   {story.icon}
                 </div>
-              </a>
+              </Link>
             ))}
             <div className="border-b border-[var(--brd)] px-6 py-7 text-center md:px-12">
-              <button className="rounded border border-[var(--brd-dark)] px-8 py-3 text-xs text-[var(--grn)] hover:bg-[var(--grn-xlight)]">
-                Load more stories
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleStoriesCount((current) =>
+                    Math.min(current + storiesPerLoad, stories.length)
+                  )
+                }
+                disabled={!hasMoreStories}
+                className={`rounded border px-8 py-3 text-xs transition ${hasMoreStories
+                  ? "border-[var(--brd-dark)] text-[var(--grn)] hover:bg-[var(--grn-xlight)]"
+                  : "cursor-not-allowed border-[var(--brd)] text-[var(--txt3)]"
+                  }`}
+              >
+                {hasMoreStories ? "Load more stories" : "No more stories"}
               </button>
             </div>
           </section>
@@ -656,12 +616,12 @@ function Home() {
         </div>
 
         <section className="border-b border-[var(--brd)]">
-          <div className="flex items-center gap-3 border-b border-[var(--brd)] px-5 py-5 md:px-12">
+          {/* <div className="flex items-center gap-3 border-b border-[var(--brd)] px-5 py-5 md:px-12">
             <h2 className="font-['Bebas_Neue'] text-[24px] tracking-[0.04em] text-[var(--blk)]">EV Sales Tracker</h2>
             <span className="rounded border border-[var(--brd)] bg-[var(--grn-xlight)] px-3 py-1 text-xs text-[var(--grn-acc)]">
               March 2025
             </span>
-          </div>
+          </div> */}
           <div className="grid border-b border-[var(--brd)] sm:grid-cols-2 lg:grid-cols-5">
             {sales.map((item) => (
               <div key={item.brand} className="border-b border-[var(--brd)] px-7 py-5 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0">

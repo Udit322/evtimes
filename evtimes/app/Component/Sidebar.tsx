@@ -122,8 +122,8 @@ const navSections: NavSection[] = [
   {
     label: "",
     items: [
+      { href: "/dashboard/posts", label: "Add Posts", icon: PostsIcon },
       { href: "/dashboard/news", label: "News", icon: NewsIcon },
-       { href: "/dashboard/posts", label: "Add Posts", icon: PostsIcon },
       { href: "/dashboard/comments", label: "Comments", icon: CommentsIcon },
       { href: "/dashboard/users", label: "Users", icon: UsersIcon },
     ],
